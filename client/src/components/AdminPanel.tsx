@@ -13,6 +13,7 @@ import {
 } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -336,8 +337,36 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
     });
   };
 
-  const handleLogout = () => {
-    window.location.href = "/api/logout";
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      
+      if (response.ok) {
+        // Clear all cached data
+        queryClient.clear();
+        queryClient.setQueryData(["/api/user"], null);
+        
+        // Close admin panel and redirect
+        onClose();
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 100);
+      } else {
+        throw new Error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Force redirect even if logout fails
+      queryClient.clear();
+      onClose();
+      window.location.href = "/";
+    }
   };
 
   return (
