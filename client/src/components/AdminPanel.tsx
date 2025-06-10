@@ -69,6 +69,10 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
     queryKey: ["/api/copyright-settings"],
   });
 
+  const { data: aboutContent } = useQuery<AboutContent>({
+    queryKey: ["/api/about-content"],
+  });
+
   // Update forms when data changes
   useEffect(() => {
     if (brandSettings) {
@@ -94,6 +98,22 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
       setCopyrightForm({ text: copyrightSettings.text });
     }
   }, [copyrightSettings]);
+
+  useEffect(() => {
+    if (aboutContent) {
+      setAboutForm({
+        title: aboutContent.title,
+        subtitle: aboutContent.subtitle,
+        philosophyTitle: aboutContent.philosophyTitle,
+        philosophyText1: aboutContent.philosophyText1,
+        philosophyText2: aboutContent.philosophyText2,
+        contactTitle: aboutContent.contactTitle,
+        contactEmail: aboutContent.contactEmail,
+        contactPhone: aboutContent.contactPhone,
+        contactAddress: aboutContent.contactAddress,
+      });
+    }
+  }, [aboutContent]);
 
   // Mutations
   const updateBrandMutation = useMutation({
@@ -215,6 +235,22 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
     },
   });
 
+  const updateAboutMutation = useMutation({
+    mutationFn: async (data: InsertAboutContent) => {
+      return await apiRequest("PUT", "/api/admin/about-content", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/about-content"] });
+      toast({ title: "محتوای درباره ما به‌روزرسانی شد" });
+    },
+    onError: () => {
+      toast({ 
+        title: "خطا در به‌روزرسانی محتوای درباره ما", 
+        variant: "destructive" 
+      });
+    },
+  });
+
   const handleBrandSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateBrandMutation.mutate(brandForm);
@@ -242,6 +278,11 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
   const handleCopyrightSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateCopyrightMutation.mutate(copyrightForm);
+  };
+
+  const handleAboutSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateAboutMutation.mutate(aboutForm);
   };
 
   const handleLogout = () => {
@@ -455,6 +496,130 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
                   className="w-full bg-[var(--bold-red)] hover:bg-red-700 text-white"
                 >
                   {updateCopyrightMutation.isPending ? "در حال ذخیره..." : "ذخیره تغییرات"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          {/* About Content Settings */}
+          <Card>
+            <CardHeader>
+              <CardTitle>محتوای درباره ما</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleAboutSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="aboutTitle">عنوان اصلی</Label>
+                    <Input
+                      id="aboutTitle"
+                      placeholder="درباره تک پوش خاص"
+                      value={aboutForm.title}
+                      onChange={(e) => setAboutForm({ ...aboutForm, title: e.target.value })}
+                      className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="aboutSubtitle">زیرعنوان</Label>
+                    <Input
+                      id="aboutSubtitle"
+                      placeholder="ما برندی هستیم که در خلق پوشاک منحصر به فرد تخصص داریم"
+                      value={aboutForm.subtitle}
+                      onChange={(e) => setAboutForm({ ...aboutForm, subtitle: e.target.value })}
+                      className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="philosophyTitle">عنوان فلسفه</Label>
+                  <Input
+                    id="philosophyTitle"
+                    placeholder="فلسفه ما"
+                    value={aboutForm.philosophyTitle}
+                    onChange={(e) => setAboutForm({ ...aboutForm, philosophyTitle: e.target.value })}
+                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="philosophyText1">متن فلسفه - بخش اول</Label>
+                  <Textarea
+                    id="philosophyText1"
+                    rows={3}
+                    placeholder="در تک پوش خاص، ما معتقدیم که هر فرد منحصر به فرد است..."
+                    value={aboutForm.philosophyText1}
+                    onChange={(e) => setAboutForm({ ...aboutForm, philosophyText1: e.target.value })}
+                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="philosophyText2">متن فلسفه - بخش دوم</Label>
+                  <Textarea
+                    id="philosophyText2"
+                    rows={3}
+                    placeholder="شعار ما یک از یک نشان‌دهنده تعهد ما به ارائه محصولاتی است..."
+                    value={aboutForm.philosophyText2}
+                    onChange={(e) => setAboutForm({ ...aboutForm, philosophyText2: e.target.value })}
+                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="contactTitle">عنوان تماس</Label>
+                  <Input
+                    id="contactTitle"
+                    placeholder="تماس با ما"
+                    value={aboutForm.contactTitle}
+                    onChange={(e) => setAboutForm({ ...aboutForm, contactTitle: e.target.value })}
+                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="contactEmail">ایمیل</Label>
+                    <Input
+                      id="contactEmail"
+                      type="email"
+                      placeholder="info@tekpooshkhaas.com"
+                      value={aboutForm.contactEmail}
+                      onChange={(e) => setAboutForm({ ...aboutForm, contactEmail: e.target.value })}
+                      className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="contactPhone">تلفن</Label>
+                    <Input
+                      id="contactPhone"
+                      placeholder="۰۹۱۲۳۴۵۶۷۸۹"
+                      value={aboutForm.contactPhone}
+                      onChange={(e) => setAboutForm({ ...aboutForm, contactPhone: e.target.value })}
+                      className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="contactAddress">آدرس</Label>
+                    <Input
+                      id="contactAddress"
+                      placeholder="تهران، ایران"
+                      value={aboutForm.contactAddress}
+                      onChange={(e) => setAboutForm({ ...aboutForm, contactAddress: e.target.value })}
+                      className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
+                    />
+                  </div>
+                </div>
+
+                <Button 
+                  type="submit" 
+                  disabled={updateAboutMutation.isPending}
+                  className="w-full bg-[var(--bold-red)] hover:bg-red-700 text-white"
+                >
+                  {updateAboutMutation.isPending ? "در حال ذخیره..." : "ذخیره تغییرات"}
                 </Button>
               </form>
             </CardContent>
