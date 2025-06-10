@@ -186,6 +186,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update t-shirt image details
+  app.put('/api/admin/tshirt-images/:id', requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid image ID" });
+      }
+
+      const { title, description, size, price } = req.body;
+      const updatedImage = await storage.updateTshirtImageDetails(id, {
+        title,
+        description,
+        size,
+        price,
+      });
+
+      res.json(updatedImage);
+    } catch (error) {
+      console.error("Error updating t-shirt image details:", error);
+      res.status(500).json({ message: "Failed to update image details" });
+    }
+  });
+
   // Delete t-shirt image
   app.delete('/api/admin/tshirt-images/:id', requireAdmin, async (req, res) => {
     try {

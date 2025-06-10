@@ -51,6 +51,13 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
     tiktok: "",
     youtube: "",
   });
+  const [editingImage, setEditingImage] = useState<TshirtImage | null>(null);
+  const [imageForm, setImageForm] = useState({
+    title: "",
+    description: "",
+    size: "",
+    price: "",
+  });
 
   // Queries
   const { data: brandSettings } = useQuery<BrandSettings>({
@@ -251,6 +258,30 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
     },
   });
 
+  const updateImageDetailsMutation = useMutation({
+    mutationFn: async (data: { id: number; title?: string; description?: string; size?: string; price?: string }) => {
+      return await apiRequest("PUT", `/api/admin/tshirt-images/${data.id}`, {
+        title: data.title,
+        description: data.description,
+        size: data.size,
+        price: data.price,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/tshirt-images"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/tshirt-images"] });
+      setEditingImage(null);
+      setImageForm({ title: "", description: "", size: "", price: "" });
+      toast({ title: "جزئیات تصویر به‌روزرسانی شد" });
+    },
+    onError: () => {
+      toast({ 
+        title: "خطا در به‌روزرسانی جزئیات تصویر", 
+        variant: "destructive" 
+      });
+    },
+  });
+
   const handleBrandSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateBrandMutation.mutate(brandForm);
@@ -283,6 +314,26 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
   const handleAboutSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateAboutMutation.mutate(aboutForm);
+  };
+
+  const handleEditImage = (image: TshirtImage) => {
+    setEditingImage(image);
+    setImageForm({
+      title: image.title || "",
+      description: image.description || "",
+      size: image.size || "",
+      price: image.price || "",
+    });
+  };
+
+  const handleImageDetailsSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingImage) return;
+    
+    updateImageDetailsMutation.mutate({
+      id: editingImage.id,
+      ...imageForm,
+    });
   };
 
   const handleLogout = () => {

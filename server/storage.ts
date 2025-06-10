@@ -36,6 +36,7 @@ export interface IStorage {
   getActiveTshirtImages(): Promise<TshirtImage[]>;
   getAllTshirtImages(): Promise<TshirtImage[]>;
   createTshirtImage(data: InsertTshirtImage): Promise<TshirtImage>;
+  updateTshirtImageDetails(id: number, data: { title?: string; description?: string; size?: string; price?: string }): Promise<TshirtImage>;
   deleteTshirtImage(id: number): Promise<void>;
   reorderTshirtImages(imageIds: number[]): Promise<void>;
   
@@ -129,6 +130,18 @@ export class DatabaseStorage implements IStorage {
       .values(data)
       .returning();
     return image;
+  }
+
+  async updateTshirtImageDetails(id: number, data: { title?: string; description?: string; size?: string; price?: string }): Promise<TshirtImage> {
+    const [updatedImage] = await db
+      .update(tshirtImages)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(tshirtImages.id, id))
+      .returning();
+    return updatedImage;
   }
 
   async deleteTshirtImage(id: number): Promise<void> {
