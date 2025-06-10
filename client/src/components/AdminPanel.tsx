@@ -481,17 +481,27 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
                             </div>
                           </div>
                           
-                          <div className="flex items-center gap-2">
-                            <span className={`px-2 py-1 text-xs rounded ${
-                              image.isActive 
-                                ? 'bg-green-500/20 text-green-400' 
-                                : 'bg-red-500/20 text-red-400'
-                            }`}>
-                              {image.isActive ? 'فعال' : 'غیرفعال'}
-                            </span>
-                            <span className="px-2 py-1 text-xs rounded bg-blue-500/20 text-blue-400">
-                              ترتیب: {image.order}
-                            </span>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className={`px-2 py-1 text-xs rounded ${
+                                image.isActive 
+                                  ? 'bg-green-500/20 text-green-400' 
+                                  : 'bg-red-500/20 text-red-400'
+                              }`}>
+                                {image.isActive ? 'فعال' : 'غیرفعال'}
+                              </span>
+                              <span className="px-2 py-1 text-xs rounded bg-blue-500/20 text-blue-400">
+                                ترتیب: {image.order}
+                              </span>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleEditImage(image)}
+                              className="text-xs"
+                            >
+                              ویرایش جزئیات
+                            </Button>
                           </div>
                         </div>
                       </div>
@@ -729,6 +739,94 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
           </Card>
         </div>
       </DialogContent>
+      
+      {/* Image Details Edit Modal */}
+      <Dialog open={!!editingImage} onOpenChange={() => setEditingImage(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>ویرایش جزئیات تصویر</DialogTitle>
+          </DialogHeader>
+          
+          {editingImage && (
+            <div className="space-y-4">
+              <div className="text-center">
+                <img 
+                  src={editingImage.imageUrl} 
+                  alt={editingImage.alt}
+                  className="w-full h-40 object-cover rounded-md"
+                />
+              </div>
+              
+              <form onSubmit={handleImageDetailsSubmit} className="space-y-4">
+                <div>
+                  <Label htmlFor="imageTitle">عنوان</Label>
+                  <Input
+                    id="imageTitle"
+                    placeholder="عنوان تصویر"
+                    value={imageForm.title}
+                    onChange={(e) => setImageForm({ ...imageForm, title: e.target.value })}
+                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="imageDescription">توضیحات</Label>
+                  <Textarea
+                    id="imageDescription"
+                    placeholder="توضیحات تصویر"
+                    value={imageForm.description}
+                    onChange={(e) => setImageForm({ ...imageForm, description: e.target.value })}
+                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
+                    rows={3}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="imageSize">سایز</Label>
+                    <Input
+                      id="imageSize"
+                      placeholder="مثال: S, M, L, XL"
+                      value={imageForm.size}
+                      onChange={(e) => setImageForm({ ...imageForm, size: e.target.value })}
+                      className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="imagePrice">قیمت</Label>
+                    <Input
+                      id="imagePrice"
+                      placeholder="مثال: ۲۵۰,۰۰۰ تومان"
+                      value={imageForm.price}
+                      onChange={(e) => setImageForm({ ...imageForm, price: e.target.value })}
+                      className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex gap-2 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setEditingImage(null)}
+                    className="flex-1"
+                  >
+                    انصراف
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={updateImageDetailsMutation.isPending}
+                    className="flex-1 bg-[var(--bold-red)] hover:bg-red-700 text-white"
+                  >
+                    {updateImageDetailsMutation.isPending ? "در حال ذخیره..." : "ذخیره تغییرات"}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }
