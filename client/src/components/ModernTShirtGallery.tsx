@@ -36,7 +36,7 @@ function ProductDetailModal({ product, isOpen, onClose }: ProductDetailModalProp
           </div>
           
           {/* Product Details */}
-          <div className="md:col-span-2 p-6 space-y-6">
+          <div className="md:col-span-2 p-6 space-y-6 bg-[var(--matte-black)]">
             <div>
               <h3 className="text-2xl font-bold text-[var(--ice-white)] mb-3 neon-text">
                 {product.title || product.alt}
@@ -49,13 +49,13 @@ function ProductDetailModal({ product, isOpen, onClose }: ProductDetailModalProp
             {product.size && (
               <div className="space-y-2">
                 <span className="text-[var(--ice-white)]/70 text-sm">سایز:</span>
-                <div className="text-[var(--ice-white)]">{product.size}</div>
+                <div className="text-[var(--ice-white)] font-medium">{product.size}</div>
               </div>
             )}
             
             <div className="border-t border-gray-700/50 pt-4">
-              <span className="text-[var(--ice-white)]/70 text-sm mb-2 block">توضیحات:</span>
-              <p className="text-[var(--ice-white)]/90 text-sm leading-relaxed">
+              <span className="text-[var(--ice-white)]/70 text-sm mb-3 block">توضیحات:</span>
+              <p className="text-[var(--ice-white)] text-sm leading-relaxed">
                 {product.description || "این طراحی منحصر به فرد از مجموعه تک پوش خاص، ترکیبی از هنر مدرن و کیفیت بالا است که سبک منحصر به فرد شما را نمایان می‌کند."}
               </p>
             </div>

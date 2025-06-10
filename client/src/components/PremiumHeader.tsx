@@ -213,6 +213,9 @@ export default function PremiumHeader({ onNavigate, currentSection }: PremiumHea
           )}
         </div>
 
+        {/* Beautiful separator line */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--ice-white)]/30 to-transparent"></div>
+        
         {/* Decorative Elements */}
         <div className="absolute top-0 left-0 w-32 h-1 bg-gradient-to-r from-[var(--bold-red)] to-transparent"></div>
         <div className="absolute top-0 right-0 w-32 h-1 bg-gradient-to-l from-[var(--bold-red)] to-transparent"></div>
