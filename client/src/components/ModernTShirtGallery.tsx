@@ -30,7 +30,7 @@ function ProductDetailModal({ product, isOpen, onClose }: ProductDetailModalProp
             <img
               src={product.imageUrl}
               alt={product.title || product.alt}
-              className="max-w-full max-h-full object-contain"
+              className="max-w-full max-h-full object-contain modal-image"
               style={{ maxHeight: '600px' }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
