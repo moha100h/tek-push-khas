@@ -34,7 +34,7 @@ export default function Footer() {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition-colors duration-300 hover-lift"
+                  className="text-[var(--ice-white)]/60 hover:text-[var(--bold-red)] transition-all duration-300 hover:scale-110 neon-glow"
                 >
                   <IconComponent className="h-6 w-6" />
                 </a>
@@ -43,7 +43,7 @@ export default function Footer() {
           </div>
           
           {/* Copyright */}
-          <p className="text-gray-400 text-sm">
+          <p className="text-[var(--ice-white)]/60 text-sm">
             {copyrightSettings?.text || "© ۱۴۰۳ تک پوش خاص. تمامی حقوق محفوظ است."}
           </p>
         </div>

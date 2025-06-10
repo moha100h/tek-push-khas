@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { BrandSettings } from "@shared/schema";
 import PremiumHeader from "@/components/PremiumHeader";
 import Footer from "@/components/Footer";
-import GalleryTShirtSlider from "@/components/GalleryTShirtSlider";
+import ProfessionalTShirtSlider from "@/components/ProfessionalTShirtSlider";
 import AboutPage from "./AboutPage";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,9 +32,9 @@ export default function HomePage() {
       />
       
       <main className="relative pt-20">
-        {/* Gallery T-Shirt Slider */}
+        {/* Professional T-Shirt Slider */}
         <section className="px-4 py-16">
-          <GalleryTShirtSlider />
+          <ProfessionalTShirtSlider />
         </section>
       </main>
 
