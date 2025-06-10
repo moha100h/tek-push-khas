@@ -99,8 +99,8 @@ export default function PremiumHeader({ onNavigate, currentSection }: PremiumHea
     <>
       <header className={`sticky top-0 z-50 transition-all duration-500 ${
         isScrolled 
-          ? 'glass-card shadow-lg backdrop-blur-xl border-b border-white/20' 
-          : 'bg-transparent'
+          ? 'bg-[var(--matte-black)]/95 shadow-lg backdrop-blur-xl border-b border-[var(--bold-red)]/20' 
+          : 'bg-[var(--matte-black)]'
       }`}>
         <div className="container mx-auto px-4 py-4">
           <nav className="flex justify-between items-center">

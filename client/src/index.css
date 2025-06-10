@@ -161,6 +161,19 @@
   .glow-red:hover {
     box-shadow: 0 0 40px rgba(220, 38, 38, 0.5);
   }
+  
+  /* Neon effects */
+  .neon-text {
+    animation: neonPulse 2s ease-in-out infinite alternate;
+  }
+  
+  .neon-glow {
+    animation: neonGlow 2s ease-in-out infinite alternate;
+  }
+  
+  .animate-float {
+    animation: floatParticle 4s ease-in-out infinite;
+  }
 }
 
 /* Advanced keyframes */
