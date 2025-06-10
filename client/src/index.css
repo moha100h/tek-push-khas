@@ -24,11 +24,11 @@
   --ring: hsl(0, 0%, 10%);
   --radius: 0.5rem;
   
-  /* Premium brand colors */
-  --ice-white: hsl(0, 0%, 99%);
-  --soft-gray: hsl(220, 14%, 96%);
-  --matte-black: hsl(222, 84%, 5%);
-  --bold-red: hsl(346, 87%, 43%);
+  /* Minimal brand colors - Enhanced contrast */
+  --ice-white: hsl(0, 0%, 100%);
+  --soft-gray: hsl(0, 0%, 97%);
+  --matte-black: hsl(0, 0%, 8%);
+  --bold-red: hsl(0, 84%, 50%);
   --accent-gold: hsl(38, 92%, 50%);
   --glass-bg: rgba(255, 255, 255, 0.8);
   --glass-border: rgba(255, 255, 255, 0.2);
