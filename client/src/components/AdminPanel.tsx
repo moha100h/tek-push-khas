@@ -6,8 +6,10 @@ import {
   TshirtImage, 
   SocialLink, 
   CopyrightSettings,
+  AboutContent,
   InsertBrandSettings,
-  InsertCopyrightSettings
+  InsertCopyrightSettings,
+  InsertAboutContent
 } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -31,6 +33,17 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
   });
   const [copyrightForm, setCopyrightForm] = useState<InsertCopyrightSettings>({
     text: "",
+  });
+  const [aboutForm, setAboutForm] = useState<InsertAboutContent>({
+    title: "",
+    subtitle: "",
+    philosophyTitle: "",
+    philosophyText1: "",
+    philosophyText2: "",
+    contactTitle: "",
+    contactEmail: "",
+    contactPhone: "",
+    contactAddress: "",
   });
   const [socialForm, setSocialForm] = useState({
     instagram: "",

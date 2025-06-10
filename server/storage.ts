@@ -4,6 +4,7 @@ import {
   tshirtImages,
   socialLinks,
   copyrightSettings,
+  aboutContent,
   type User,
   type InsertUser,
   type BrandSettings,
@@ -14,6 +15,8 @@ import {
   type InsertSocialLink,
   type CopyrightSettings,
   type InsertCopyrightSettings,
+  type AboutContent,
+  type InsertAboutContent,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
@@ -188,6 +191,29 @@ export class DatabaseStorage implements IStorage {
     } else {
       const [created] = await db
         .insert(copyrightSettings)
+        .values(data)
+        .returning();
+      return created;
+    }
+  }
+
+  async getAboutContent(): Promise<AboutContent | undefined> {
+    const [content] = await db.select().from(aboutContent).limit(1);
+    return content;
+  }
+
+  async updateAboutContent(data: InsertAboutContent): Promise<AboutContent> {
+    const existing = await this.getAboutContent();
+    if (existing) {
+      const [updated] = await db
+        .update(aboutContent)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(aboutContent.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db
+        .insert(aboutContent)
         .values(data)
         .returning();
       return created;

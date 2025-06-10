@@ -10,7 +10,8 @@ import {
   insertBrandSettingsSchema, 
   insertTshirtImageSchema, 
   insertSocialLinkSchema, 
-  insertCopyrightSettingsSchema 
+  insertCopyrightSettingsSchema,
+  insertAboutContentSchema
 } from "@shared/schema";
 import { z } from "zod";
 
@@ -250,6 +251,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         console.error("Error updating copyright settings:", error);
         res.status(500).json({ message: "Failed to update copyright settings" });
+      }
+    }
+  });
+
+  // About content routes
+  app.get("/api/about-content", async (req, res) => {
+    try {
+      const content = await storage.getAboutContent();
+      res.json(content);
+    } catch (error) {
+      res.status(500).json({ message: "خطا در دریافت محتوای درباره ما" });
+    }
+  });
+
+  app.put("/api/admin/about-content", requireAuth, requireAdmin, async (req, res) => {
+    try {
+      const validatedData = insertAboutContentSchema.parse(req.body);
+      const content = await storage.updateAboutContent(validatedData);
+      res.json(content);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid data", errors: error.errors });
+      } else {
+        console.error("Error updating about content:", error);
+        res.status(500).json({ message: "خطا در بروزرسانی محتوای درباره ما" });
       }
     }
   });
