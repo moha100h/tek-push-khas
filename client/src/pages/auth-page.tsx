@@ -17,7 +17,10 @@ export default function AuthPage() {
   const [, setLocation] = useLocation();
 
   const form = useForm<LoginUser>({
-    resolver: zodResolver(loginUserSchema),
+    resolver: zodResolver(loginUserSchema.extend({
+      username: loginUserSchema.shape.username.min(3, "نام کاربری باید حداقل ۳ کاراکتر باشد"),
+      password: loginUserSchema.shape.password.min(6, "رمز عبور باید حداقل ۶ کاراکتر باشد")
+    })),
     defaultValues: {
       username: "",
       password: "",
@@ -140,12 +143,8 @@ export default function AuthPage() {
           </Form>
 
           <div className="text-center">
-            <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-lg border">
-              <p className="font-medium text-[var(--matte-black)] mb-1">
-                اطلاعات ورود پیش‌فرض:
-              </p>
-              <p>نام کاربری: <span className="font-mono bg-white px-2 py-1 rounded">admin</span></p>
-              <p>رمز عبور: <span className="font-mono bg-white px-2 py-1 rounded">admin123</span></p>
+            <div className="text-xs text-gray-400 border-t pt-4">
+              <p>© ۱۴۰۳ تک پوش خاص - پنل مدیریت</p>
             </div>
           </div>
         </CardContent>

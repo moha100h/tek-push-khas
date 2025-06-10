@@ -33,11 +33,40 @@ async function comparePasswords(supplied: string, stored: string): Promise<boole
   return timingSafeEqual(hashedBuf, suppliedBuf);
 }
 
+// Track failed login attempts
+const loginAttempts = new Map<string, { count: number; lastAttempt: number }>();
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_TIME = 15 * 60 * 1000; // 15 minutes
+
+function checkLoginAttempts(identifier: string): boolean {
+  const attempts = loginAttempts.get(identifier);
+  if (!attempts) return true;
+  
+  const now = Date.now();
+  if (now - attempts.lastAttempt > LOCKOUT_TIME) {
+    loginAttempts.delete(identifier);
+    return true;
+  }
+  
+  return attempts.count < MAX_LOGIN_ATTEMPTS;
+}
+
+function recordFailedLogin(identifier: string): void {
+  const attempts = loginAttempts.get(identifier) || { count: 0, lastAttempt: 0 };
+  attempts.count += 1;
+  attempts.lastAttempt = Date.now();
+  loginAttempts.set(identifier, attempts);
+}
+
+function clearLoginAttempts(identifier: string): void {
+  loginAttempts.delete(identifier);
+}
+
 export function setupAuth(app: Express) {
   const PostgresSessionStore = connectPg(session);
   
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET || "your-secret-key-change-in-production",
+    secret: process.env.SESSION_SECRET || "fallback-secret-change-in-production",
     resave: false,
     saveUninitialized: false,
     store: new PostgresSessionStore({
@@ -47,8 +76,9 @@ export function setupAuth(app: Express) {
     }),
     cookie: {
       httpOnly: true,
-      secure: false, // Set to true in production with HTTPS
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 8 * 60 * 60 * 1000, // 8 hours
+      sameSite: "strict"
     },
   };
 
@@ -113,13 +143,34 @@ export function setupAuth(app: Express) {
     }
   });
 
-  // Login endpoint
+  // Login endpoint with rate limiting
   app.post("/api/login", (req, res, next) => {
+    const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+    const { username } = req.body;
+    
+    // Check login attempts for both IP and username
+    if (!checkLoginAttempts(clientIP) || (username && !checkLoginAttempts(username))) {
+      return res.status(429).json({ 
+        message: "تعداد تلاش‌های ورود بیش از حد مجاز. لطفاً ۱۵ دقیقه صبر کنید." 
+      });
+    }
+    
     passport.authenticate("local", (err: any, user: User, info: any) => {
       if (err) return next(err);
+      
       if (!user) {
-        return res.status(401).json({ message: info?.message || "اطلاعات ورود نادرست است" });
+        // Record failed login attempts
+        recordFailedLogin(clientIP);
+        if (username) recordFailedLogin(username);
+        
+        return res.status(401).json({ 
+          message: info?.message || "نام کاربری یا رمز عبور اشتباه است" 
+        });
       }
+      
+      // Clear login attempts on successful login
+      clearLoginAttempts(clientIP);
+      clearLoginAttempts(username);
       
       req.login(user, (err) => {
         if (err) return next(err);
