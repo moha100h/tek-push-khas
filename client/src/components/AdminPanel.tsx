@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useQuery, useMutation, queryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 import { 
   BrandSettings, 
   TshirtImage, 
@@ -41,14 +42,6 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
   // Queries
   const { data: brandSettings } = useQuery<BrandSettings>({
     queryKey: ["/api/brand-settings"],
-    onSuccess: (data) => {
-      if (data) {
-        setBrandForm({
-          name: data.name,
-          slogan: data.slogan,
-        });
-      }
-    },
   });
 
   const { data: adminImages = [] } = useQuery<TshirtImage[]>({
@@ -57,25 +50,37 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
 
   const { data: socialLinks = [] } = useQuery<SocialLink[]>({
     queryKey: ["/api/social-links"],
-    onSuccess: (data) => {
-      if (data) {
-        const socialMap = data.reduce((acc, link) => {
-          acc[link.platform as keyof typeof socialMap] = link.url;
-          return acc;
-        }, {} as typeof socialForm);
-        setSocialForm({ ...socialForm, ...socialMap });
-      }
-    },
   });
 
   const { data: copyrightSettings } = useQuery<CopyrightSettings>({
     queryKey: ["/api/copyright-settings"],
-    onSuccess: (data) => {
-      if (data) {
-        setCopyrightForm({ text: data.text });
-      }
-    },
   });
+
+  // Update forms when data changes
+  useEffect(() => {
+    if (brandSettings) {
+      setBrandForm({
+        name: brandSettings.name,
+        slogan: brandSettings.slogan,
+      });
+    }
+  }, [brandSettings]);
+
+  useEffect(() => {
+    if (socialLinks) {
+      const socialMap = socialLinks.reduce((acc: any, link: any) => {
+        acc[link.platform] = link.url;
+        return acc;
+      }, {});
+      setSocialForm({ ...socialForm, ...socialMap });
+    }
+  }, [socialLinks]);
+
+  useEffect(() => {
+    if (copyrightSettings) {
+      setCopyrightForm({ text: copyrightSettings.text });
+    }
+  }, [copyrightSettings]);
 
   // Mutations
   const updateBrandMutation = useMutation({
@@ -83,7 +88,7 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
       return await apiRequest("PUT", "/api/admin/brand-settings", data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["/api/brand-settings"]);
+      queryClient.invalidateQueries({ queryKey: ["/api/brand-settings"] });
       toast({ title: "تنظیمات برند با موفقیت به‌روزرسانی شد" });
     },
     onError: () => {
@@ -105,7 +110,7 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["/api/brand-settings"]);
+      queryClient.invalidateQueries({ queryKey: ["/api/brand-settings"] });
       toast({ title: "لوگو با موفقیت آپلود شد" });
     },
     onError: () => {
@@ -129,8 +134,8 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["/api/admin/tshirt-images"]);
-      queryClient.invalidateQueries(["/api/tshirt-images"]);
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/tshirt-images"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/tshirt-images"] });
       toast({ title: "تصاویر با موفقیت آپلود شدند" });
     },
     onError: () => {
