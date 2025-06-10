@@ -10,21 +10,11 @@ import Landing from "@/components/Landing";
 import NotFound from "@/pages/not-found";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
-
   return (
     <Switch>
-      {isLoading ? (
-        <Route path="/" component={() => <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[var(--bold-red)]"></div>
-        </div>} />
-      ) : (
-        <>
-          <Route path="/" component={HomePage} />
-          <Route path="/login" component={Landing} />
-          <Route component={NotFound} />
-        </>
-      )}
+      <Route path="/" component={HomePage} />
+      <Route path="/login" component={Landing} />
+      <Route component={NotFound} />
     </Switch>
   );
 }
