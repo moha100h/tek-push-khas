@@ -151,8 +151,8 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
       return await apiRequest("DELETE", `/api/admin/tshirt-images/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["/api/admin/tshirt-images"]);
-      queryClient.invalidateQueries(["/api/tshirt-images"]);
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/tshirt-images"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/tshirt-images"] });
       toast({ title: "تصویر با موفقیت حذف شد" });
     },
     onError: () => {
@@ -175,7 +175,7 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
       return await apiRequest("PUT", "/api/admin/social-links", socialArray);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["/api/social-links"]);
+      queryClient.invalidateQueries({ queryKey: ["/api/social-links"] });
       toast({ title: "لینک‌های شبکه‌های اجتماعی به‌روزرسانی شدند" });
     },
     onError: () => {
@@ -191,7 +191,7 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
       return await apiRequest("PUT", "/api/admin/copyright-settings", data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["/api/copyright-settings"]);
+      queryClient.invalidateQueries({ queryKey: ["/api/copyright-settings"] });
       toast({ title: "تنظیمات کپی‌رایت به‌روزرسانی شد" });
     },
     onError: () => {
