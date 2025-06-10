@@ -9,6 +9,13 @@ const socialIcons = {
   youtube: Youtube,
 };
 
+const socialTooltips = {
+  instagram: "پیج اینستاگرام ما",
+  telegram: "کانال تلگرامی ما", 
+  tiktok: "پیج تیک تاک ما",
+  youtube: "کانال یوتیوب ما",
+};
+
 export default function Footer() {
   const { data: socialLinks } = useQuery<SocialLink[]>({
     queryKey: ["/api/social-links"],
@@ -34,6 +41,7 @@ export default function Footer() {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  title={socialTooltips[link.platform as keyof typeof socialTooltips]}
                   className="text-[var(--ice-white)]/60 hover:text-[var(--bold-red)] transition-all duration-300 hover:scale-110 neon-glow"
                 >
                   <IconComponent className="h-6 w-6" />
