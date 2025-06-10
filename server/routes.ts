@@ -1,7 +1,7 @@
 import express, { type Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, requireAuth, requireAdmin } from "./auth";
 import multer from "multer";
 import sharp from "sharp";
 import path from "path";
@@ -40,22 +40,10 @@ const ensureUploadsDir = async () => {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
-  await setupAuth(app);
+  setupAuth(app);
 
   // Serve static uploads
   app.use('/uploads', express.static(path.join(process.cwd(), 'dist', 'public', 'uploads')));
-
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
 
   // Public API routes - no authentication required
   
@@ -106,7 +94,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Protected admin routes
   
   // Update brand settings
-  app.put('/api/admin/brand-settings', isAuthenticated, async (req, res) => {
+  app.put('/api/admin/brand-settings', requireAdmin, async (req, res) => {
     try {
       const validatedData = insertBrandSettingsSchema.parse(req.body);
       const settings = await storage.updateBrandSettings(validatedData);
@@ -122,7 +110,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Upload logo
-  app.post('/api/admin/upload-logo', isAuthenticated, upload.single('logo'), async (req, res) => {
+  app.post('/api/admin/upload-logo', requireAdmin, upload.single('logo'), async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
@@ -148,7 +136,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Upload t-shirt images
-  app.post('/api/admin/upload-tshirt-images', isAuthenticated, upload.array('images', 10), async (req, res) => {
+  app.post('/api/admin/upload-tshirt-images', requireAdmin, upload.array('images', 10), async (req, res) => {
     try {
       const files = req.files as Express.Multer.File[];
       if (!files || files.length === 0) {
@@ -187,7 +175,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all t-shirt images for admin
-  app.get('/api/admin/tshirt-images', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/tshirt-images', requireAdmin, async (req, res) => {
     try {
       const images = await storage.getAllTshirtImages();
       res.json(images);
@@ -198,7 +186,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete t-shirt image
-  app.delete('/api/admin/tshirt-images/:id', isAuthenticated, async (req, res) => {
+  app.delete('/api/admin/tshirt-images/:id', requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -214,7 +202,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update t-shirt images order
-  app.put('/api/admin/tshirt-images/reorder', isAuthenticated, async (req, res) => {
+  app.put('/api/admin/tshirt-images/reorder', requireAdmin, async (req, res) => {
     try {
       const { imageIds } = req.body;
       if (!Array.isArray(imageIds)) {
@@ -230,7 +218,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update social links
-  app.put('/api/admin/social-links', isAuthenticated, async (req, res) => {
+  app.put('/api/admin/social-links', requireAdmin, async (req, res) => {
     try {
       const links = req.body;
       if (!Array.isArray(links)) {
@@ -251,7 +239,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update copyright settings
-  app.put('/api/admin/copyright-settings', isAuthenticated, async (req, res) => {
+  app.put('/api/admin/copyright-settings', requireAdmin, async (req, res) => {
     try {
       const validatedData = insertCopyrightSettingsSchema.parse(req.body);
       const settings = await storage.updateCopyrightSettings(validatedData);
