@@ -124,10 +124,10 @@ export default function PremiumHeader({ onNavigate, currentSection }: PremiumHea
               </div>
               
               <div className="space-y-1">
-                <h1 className="text-2xl font-bold gradient-text">
+                <h1 className="text-2xl font-bold text-[var(--ice-white)]">
                   {brandSettings?.name || "تک پوش خاص"}
                 </h1>
-                <p className="text-sm text-[var(--matte-black)]/60 font-medium">
+                <p className="text-sm text-[var(--bold-red)] font-medium neon-text">
                   {brandSettings?.slogan || "یک از یک"}
                 </p>
               </div>
@@ -139,13 +139,13 @@ export default function PremiumHeader({ onNavigate, currentSection }: PremiumHea
                 onClick={() => onNavigate('home')}
                 className={`relative px-4 py-2 font-medium transition-all duration-300 ${
                   currentSection === 'home' 
-                    ? 'text-[var(--bold-red)]' 
-                    : 'text-[var(--matte-black)] hover:text-[var(--bold-red)]'
+                    ? 'text-[var(--bold-red)] neon-text' 
+                    : 'text-[var(--ice-white)] hover:text-[var(--bold-red)]'
                 }`}
               >
                 خانه
                 {currentSection === 'home' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[var(--bold-red)] to-red-600 rounded-full"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[var(--bold-red)] to-red-600 rounded-full neon-glow"></div>
                 )}
               </button>
               
@@ -153,13 +153,13 @@ export default function PremiumHeader({ onNavigate, currentSection }: PremiumHea
                 onClick={() => onNavigate('about')}
                 className={`relative px-4 py-2 font-medium transition-all duration-300 ${
                   currentSection === 'about' 
-                    ? 'text-[var(--bold-red)]' 
-                    : 'text-[var(--matte-black)] hover:text-[var(--bold-red)]'
+                    ? 'text-[var(--bold-red)] neon-text' 
+                    : 'text-[var(--ice-white)] hover:text-[var(--bold-red)]'
                 }`}
               >
                 درباره ما
                 {currentSection === 'about' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[var(--bold-red)] to-red-600 rounded-full"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[var(--bold-red)] to-red-600 rounded-full neon-glow"></div>
                 )}
               </button>
               
@@ -171,7 +171,7 @@ export default function PremiumHeader({ onNavigate, currentSection }: PremiumHea
               variant="ghost"
               size="sm"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 hover:bg-[var(--bold-red)]/10 transition-colors"
+              className="md:hidden p-2 text-[var(--ice-white)] hover:bg-[var(--bold-red)]/20 hover:text-[var(--bold-red)] transition-colors"
             >
               {isMobileMenuOpen ? (
                 <X className="h-5 w-5" />
@@ -183,7 +183,7 @@ export default function PremiumHeader({ onNavigate, currentSection }: PremiumHea
 
           {/* Mobile Navigation */}
           {isMobileMenuOpen && (
-            <div className="md:hidden mt-4 pb-4 border-t border-white/20 slide-up">
+            <div className="md:hidden mt-4 pb-4 border-t border-[var(--bold-red)]/20 slide-up">
               <div className="flex flex-col space-y-4 pt-4">
                 <button
                   onClick={() => {
@@ -192,8 +192,8 @@ export default function PremiumHeader({ onNavigate, currentSection }: PremiumHea
                   }}
                   className={`text-right px-4 py-2 font-medium transition-colors ${
                     currentSection === 'home' 
-                      ? 'text-[var(--bold-red)]' 
-                      : 'text-[var(--matte-black)]'
+                      ? 'text-[var(--bold-red)] neon-text' 
+                      : 'text-[var(--ice-white)]'
                   }`}
                 >
                   خانه
@@ -206,14 +206,14 @@ export default function PremiumHeader({ onNavigate, currentSection }: PremiumHea
                   }}
                   className={`text-right px-4 py-2 font-medium transition-colors ${
                     currentSection === 'about' 
-                      ? 'text-[var(--bold-red)]' 
-                      : 'text-[var(--matte-black)]'
+                      ? 'text-[var(--bold-red)] neon-text' 
+                      : 'text-[var(--ice-white)]'
                   }`}
                 >
                   درباره ما
                 </button>
                 
-                <div className="px-4 pt-2 border-t border-white/20">
+                <div className="px-4 pt-2 border-t border-[var(--bold-red)]/20">
                   <AuthControls onShowAdmin={() => {
                     setShowAdminPanel(true);
                     setIsMobileMenuOpen(false);
