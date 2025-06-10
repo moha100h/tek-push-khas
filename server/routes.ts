@@ -151,10 +151,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const filename = `tshirt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.webp`;
         const filepath = path.join(uploadsDir, filename);
 
-        // Process and save image
+        // Process and save image with high quality and preserved aspect ratio
         await sharp(file.buffer)
-          .resize(800, 600, { fit: 'cover' })
-          .webp({ quality: 85 })
+          .resize(1200, null, { 
+            fit: 'inside',
+            withoutEnlargement: true 
+          })
+          .webp({ quality: 95, lossless: false })
           .toFile(filepath);
 
         const imageUrl = `/uploads/${filename}`;

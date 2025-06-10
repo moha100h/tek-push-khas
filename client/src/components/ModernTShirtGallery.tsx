@@ -26,13 +26,14 @@ function ProductDetailModal({ product, isOpen, onClose }: ProductDetailModalProp
         
         <div className="grid md:grid-cols-5 gap-0">
           {/* Product Image - Larger */}
-          <div className="md:col-span-3 relative aspect-square bg-gray-900/50">
+          <div className="md:col-span-3 relative bg-gray-900/50 flex items-center justify-center min-h-[500px]">
             <img
               src={product.imageUrl}
               alt={product.title || product.alt}
-              className="w-full h-full object-contain p-8"
+              className="max-w-full max-h-full object-contain"
+              style={{ maxHeight: '600px' }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
           </div>
           
           {/* Product Details */}
@@ -132,11 +133,12 @@ export default function ModernTShirtGallery() {
               onClick={() => openProductDetail(image)}
             >
               {/* T-Shirt Image */}
-              <div className="relative aspect-square bg-gray-900/50">
+              <div className="relative aspect-[4/5] bg-gray-900/50">
                 <img
                   src={image.imageUrl}
                   alt={image.title || image.alt}
-                  className="w-full h-full object-contain p-6 group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300 tshirt-image"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 

@@ -219,6 +219,29 @@
   }
 }
 
+/* High quality image rendering */
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: optimize-quality;
+}
+
+/* Preserve aspect ratio for t-shirt images */
+.tshirt-image {
+  object-fit: contain;
+  object-position: center;
+  max-width: 100%;
+  height: auto;
+}
+
+/* High quality modal images */
+.modal-image {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: optimize-quality;
+  filter: contrast(1.02) brightness(1.01);
+}
+
 @keyframes shimmer {
   0% {
     background-position: -200px 0;
