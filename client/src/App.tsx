@@ -21,7 +21,6 @@ function Router() {
       ) : (
         <>
           <Route path="/" component={HomePage} />
-          <Route path="/about" component={AboutPage} />
           <Route path="/login" component={Landing} />
           <Route component={NotFound} />
         </>

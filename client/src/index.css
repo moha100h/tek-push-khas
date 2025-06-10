@@ -58,7 +58,7 @@
   }
 
   body {
-    @apply bg-[var(--off-white)] text-[var(--matte-black)] font-vazir antialiased;
+    @apply bg-[var(--off-white)] text-[var(--matte-black)] antialiased;
     font-family: 'Vazirmatn', sans-serif;
   }
   
