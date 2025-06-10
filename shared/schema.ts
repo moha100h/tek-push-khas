@@ -22,13 +22,17 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User storage table - required for Replit Auth
+// User storage table for username/password authentication
 export const users = pgTable("users", {
-  id: varchar("id").primaryKey().notNull(),
-  email: varchar("email").unique(),
-  firstName: varchar("first_name"),
-  lastName: varchar("last_name"),
-  profileImageUrl: varchar("profile_image_url"),
+  id: serial("id").primaryKey(),
+  username: varchar("username", { length: 50 }).unique().notNull(),
+  password: varchar("password", { length: 255 }).notNull(),
+  email: varchar("email", { length: 100 }).unique(),
+  firstName: varchar("first_name", { length: 50 }),
+  lastName: varchar("last_name", { length: 50 }),
+  profileImageUrl: varchar("profile_image_url", { length: 500 }),
+  role: varchar("role", { length: 20 }).default("admin"),
+  isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -72,6 +76,18 @@ export const copyrightSettings = pgTable("copyright_settings", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// User authentication schemas
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const loginUserSchema = z.object({
+  username: z.string().min(3, "نام کاربری باید حداقل ۳ کاراکتر باشد"),
+  password: z.string().min(4, "رمز عبور باید حداقل ۴ کاراکتر باشد"),
+});
+
 // Schemas for validation
 export const insertBrandSettingsSchema = createInsertSchema(brandSettings).omit({
   id: true,
@@ -98,8 +114,9 @@ export const insertCopyrightSettingsSchema = createInsertSchema(copyrightSetting
 });
 
 // Types
-export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+export type LoginUser = z.infer<typeof loginUserSchema>;
 export type BrandSettings = typeof brandSettings.$inferSelect;
 export type InsertBrandSettings = z.infer<typeof insertBrandSettingsSchema>;
 export type TshirtImage = typeof tshirtImages.$inferSelect;
