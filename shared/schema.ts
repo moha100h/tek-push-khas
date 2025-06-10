@@ -80,6 +80,22 @@ export const copyrightSettings = pgTable("copyright_settings", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// About page content table
+export const aboutContent = pgTable("about_content", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull().default("درباره تک پوش خاص"),
+  subtitle: text("subtitle").notNull().default("ما برندی هستیم که در خلق پوشاک منحصر به فرد تخصص داریم"),
+  philosophyTitle: text("philosophy_title").notNull().default("فلسفه ما"),
+  philosophyText1: text("philosophy_text1").notNull().default("در تک پوش خاص، ما معتقدیم که هر فرد منحصر به فرد است و پوشاک او نیز باید این منحصر به فرد بودن را منعکس کند."),
+  philosophyText2: text("philosophy_text2").notNull().default("شعار ما \"یک از یک\" نشان‌دهنده تعهد ما به ارائه محصولاتی است که در هیچ جای دیگری پیدا نخواهید کرد."),
+  contactTitle: text("contact_title").notNull().default("تماس با ما"),
+  contactEmail: text("contact_email").notNull().default("info@tekpooshkhaas.com"),
+  contactPhone: text("contact_phone").notNull().default("۰۹۱۲۳۴۵۶۷۸۹"),
+  contactAddress: text("contact_address").notNull().default("تهران، ایران"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // User authentication schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -117,6 +133,12 @@ export const insertCopyrightSettingsSchema = createInsertSchema(copyrightSetting
   updatedAt: true,
 });
 
+export const insertAboutContentSchema = createInsertSchema(aboutContent).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -129,3 +151,5 @@ export type SocialLink = typeof socialLinks.$inferSelect;
 export type InsertSocialLink = z.infer<typeof insertSocialLinkSchema>;
 export type CopyrightSettings = typeof copyrightSettings.$inferSelect;
 export type InsertCopyrightSettings = z.infer<typeof insertCopyrightSettingsSchema>;
+export type AboutContent = typeof aboutContent.$inferSelect;
+export type InsertAboutContent = z.infer<typeof insertAboutContentSchema>;

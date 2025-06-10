@@ -13,18 +13,7 @@ function AuthControls({ onShowAdmin }: { onShowAdmin: () => void }) {
   const [, setLocation] = useLocation();
 
   if (!isAuthenticated) {
-    return (
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setLocation("/auth")}
-        className="border-[var(--bold-red)]/30 text-[var(--bold-red)] hover:bg-[var(--bold-red)] hover:text-white transition-all duration-300 hover:shadow-lg hover:scale-105 group"
-      >
-        <LogIn className="h-4 w-4 mr-2 transition-transform group-hover:scale-110" />
-        ورود مدیر
-        <Sparkles className="h-3 w-3 mr-1 opacity-0 group-hover:opacity-100 transition-opacity" />
-      </Button>
-    );
+    return null;
   }
 
   return (

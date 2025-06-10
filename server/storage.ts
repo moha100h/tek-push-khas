@@ -43,6 +43,10 @@ export interface IStorage {
   // Copyright settings operations
   getCopyrightSettings(): Promise<CopyrightSettings | undefined>;
   updateCopyrightSettings(data: InsertCopyrightSettings): Promise<CopyrightSettings>;
+  
+  // About content operations
+  getAboutContent(): Promise<AboutContent | undefined>;
+  updateAboutContent(data: InsertAboutContent): Promise<AboutContent>;
 }
 
 export class DatabaseStorage implements IStorage {
