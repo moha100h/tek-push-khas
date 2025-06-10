@@ -365,9 +365,9 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
           {/* Image Management */}
           <Card>
             <CardHeader>
-              <CardTitle>مدیریت تصاویر اسلاید</CardTitle>
+              <CardTitle>مدیریت گالری تی‌شرت‌ها</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div>
                 <Label htmlFor="imageUpload">افزودن تصاویر جدید</Label>
                 <Input
@@ -378,28 +378,80 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
                   onChange={handleImagesUpload}
                   className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
                 />
+                <p className="text-sm text-gray-500 mt-1">
+                  می‌توانید چندین تصویر همزمان انتخاب کنید
+                </p>
               </div>
               
               <div>
-                <Label>تصاویر فعلی</Label>
-                <div className="grid grid-cols-3 gap-2 mt-2">
+                <Label>تصاویر گالری</Label>
+                <div className="space-y-4 mt-3">
                   {adminImages.map((image) => (
-                    <div key={image.id} className="relative group">
-                      <img
-                        src={image.imageUrl}
-                        alt={image.alt}
-                        className="w-full h-20 object-cover rounded"
-                      />
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => deleteImageMutation.mutate(image.id)}
-                        className="absolute top-1 right-1 w-6 h-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
+                    <div key={image.id} className="border border-gray-700 rounded-lg p-4 bg-gray-900/30">
+                      <div className="grid md:grid-cols-4 gap-4">
+                        {/* Image Preview */}
+                        <div className="relative">
+                          <img
+                            src={image.imageUrl}
+                            alt={image.alt}
+                            className="w-full h-24 object-cover rounded"
+                          />
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => deleteImageMutation.mutate(image.id)}
+                            className="absolute top-1 right-1 w-6 h-6 p-0"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        
+                        {/* Image Details */}
+                        <div className="md:col-span-3 space-y-3">
+                          <div className="grid md:grid-cols-2 gap-3">
+                            <div>
+                              <Label className="text-xs">عنوان</Label>
+                              <div className="text-sm text-white">
+                                {image.title || "بدون عنوان"}
+                              </div>
+                            </div>
+                            <div>
+                              <Label className="text-xs">سایز</Label>
+                              <div className="text-sm text-white">
+                                {image.size || "مشخص نشده"}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <Label className="text-xs">توضیحات</Label>
+                            <div className="text-sm text-white">
+                              {image.description || "توضیحی وجود ندارد"}
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <span className={`px-2 py-1 text-xs rounded ${
+                              image.isActive 
+                                ? 'bg-green-500/20 text-green-400' 
+                                : 'bg-red-500/20 text-red-400'
+                            }`}>
+                              {image.isActive ? 'فعال' : 'غیرفعال'}
+                            </span>
+                            <span className="px-2 py-1 text-xs rounded bg-blue-500/20 text-blue-400">
+                              ترتیب: {image.order}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   ))}
+                  
+                  {adminImages.length === 0 && (
+                    <div className="text-center py-8 text-gray-500">
+                      هنوز تصویری اضافه نشده است
+                    </div>
+                  )}
                 </div>
               </div>
             </CardContent>
