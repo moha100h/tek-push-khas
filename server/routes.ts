@@ -40,6 +40,15 @@ const ensureUploadsDir = async () => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Health check endpoint for monitoring
+  app.get('/api/health', (req, res) => {
+    res.status(200).json({ 
+      status: 'OK', 
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime()
+    });
+  });
+
   // Auth middleware
   setupAuth(app);
 

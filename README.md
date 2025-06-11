@@ -59,7 +59,18 @@ sudo apt install build-essential -y
 
 ## نصب پروژه
 
-### 1. دانلود کد منبع
+### روش 1: نصب خودکار (توصیه شده)
+
+```bash
+# دانلود و اجرای اسکریپت نصب خودکار
+wget https://raw.githubusercontent.com/your-repo/tekpush-website/main/setup-ubuntu.sh
+chmod +x setup-ubuntu.sh
+./setup-ubuntu.sh
+```
+
+### روش 2: نصب دستی
+
+#### 1. دانلود کد منبع
 
 ```bash
 # کلون کردن پروژه
@@ -117,7 +128,9 @@ npm run db:push
 
 ## اجرای پروژه
 
-### حالت توسعه (Development)
+### روش 1: اجرای مستقیم
+
+#### حالت توسعه (Development)
 
 ```bash
 # اجرای سرور توسعه
@@ -127,7 +140,7 @@ npm run dev
 # http://localhost:5000
 ```
 
-### حالت تولید (Production)
+#### حالت تولید (Production)
 
 ```bash
 # ساخت فایل‌های production
@@ -135,6 +148,51 @@ npm run build
 
 # اجرای سرور production
 npm start
+```
+
+### روش 2: اجرای با Docker (توصیه شده برای production)
+
+#### پیش‌نیازهای Docker
+
+```bash
+# نصب Docker
+sudo apt update
+sudo apt install docker.io docker-compose -y
+
+# اضافه کردن کاربر به گروه docker
+sudo usermod -aG docker $USER
+newgrp docker
+
+# فعال‌سازی سرویس Docker
+sudo systemctl enable docker
+sudo systemctl start docker
+```
+
+#### اجرای با Docker Compose
+
+```bash
+# ایجاد فایل محیطی
+cp .env.example .env
+
+# ویرایش تنظیمات
+nano .env
+
+# اجرای تمام سرویس‌ها
+docker-compose up -d
+
+# مشاهده لاگ‌ها
+docker-compose logs -f
+
+# توقف سرویس‌ها
+docker-compose down
+```
+
+#### متغیرهای محیطی برای Docker
+
+```bash
+# ایجاد فایل .env برای Docker
+echo "DB_PASSWORD=your_secure_password" > .env
+echo "SESSION_SECRET=$(openssl rand -base64 32)" >> .env
 ```
 
 ## تنظیمات اضافی
