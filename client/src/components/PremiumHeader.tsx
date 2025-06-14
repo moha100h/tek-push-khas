@@ -88,8 +88,8 @@ export default function PremiumHeader({ onNavigate, currentSection }: PremiumHea
     <>
       <header className={`sticky top-0 z-50 transition-all duration-500 ${
         isScrolled 
-          ? 'bg-[var(--matte-black)]/95 shadow-lg backdrop-blur-xl border-b border-[var(--bold-red)]/20' 
-          : 'bg-[var(--matte-black)]'
+          ? 'bg-[var(--ice-white)]/95 shadow-lg backdrop-blur-xl border-b-2 border-[var(--neon-red)]' 
+          : 'bg-[var(--ice-white)] border-b-2 border-[var(--neon-red)]'
       }`}>
         <div className="container mx-auto px-4 py-4">
           <nav className="flex justify-between items-center">
@@ -113,10 +113,10 @@ export default function PremiumHeader({ onNavigate, currentSection }: PremiumHea
               </div>
               
               <div className="space-y-1">
-                <h1 className="text-2xl font-bold text-[var(--ice-white)]">
+                <h1 className="text-2xl font-bold text-[var(--matte-black)] neon-text">
                   {brandSettings?.name || "تک پوش خاص"}
                 </h1>
-                <p className="text-sm text-[var(--bold-red)] font-medium neon-text">
+                <p className="text-sm text-[var(--matte-black)]/70 font-medium">
                   {brandSettings?.slogan || "یک از یک"}
                 </p>
               </div>
@@ -129,7 +129,7 @@ export default function PremiumHeader({ onNavigate, currentSection }: PremiumHea
                 className={`relative px-4 py-2 font-medium transition-all duration-300 ${
                   currentSection === 'home' 
                     ? 'text-[var(--bold-red)] neon-text' 
-                    : 'text-[var(--ice-white)] hover:text-[var(--bold-red)]'
+                    : 'text-[var(--matte-black)] hover:text-[var(--bold-red)]'
                 }`}
               >
                 خانه
@@ -143,7 +143,7 @@ export default function PremiumHeader({ onNavigate, currentSection }: PremiumHea
                 className={`relative px-4 py-2 font-medium transition-all duration-300 ${
                   currentSection === 'about' 
                     ? 'text-[var(--bold-red)] neon-text' 
-                    : 'text-[var(--ice-white)] hover:text-[var(--bold-red)]'
+                    : 'text-[var(--matte-black)] hover:text-[var(--bold-red)]'
                 }`}
               >
                 درباره ما
@@ -160,7 +160,7 @@ export default function PremiumHeader({ onNavigate, currentSection }: PremiumHea
               variant="ghost"
               size="sm"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-[var(--ice-white)] hover:bg-[var(--bold-red)]/20 hover:text-[var(--bold-red)] transition-colors"
+              className="md:hidden p-2 text-[var(--matte-black)] hover:bg-[var(--bold-red)]/20 hover:text-[var(--bold-red)] transition-colors"
             >
               {isMobileMenuOpen ? (
                 <X className="h-5 w-5" />
@@ -172,7 +172,7 @@ export default function PremiumHeader({ onNavigate, currentSection }: PremiumHea
 
           {/* Mobile Navigation */}
           {isMobileMenuOpen && (
-            <div className="md:hidden mt-4 pb-4 border-t border-[var(--bold-red)]/20 slide-up">
+            <div className="md:hidden mt-4 pb-4 border-t-2 border-[var(--neon-red)] neon-separator slide-up">
               <div className="flex flex-col space-y-4 pt-4">
                 <button
                   onClick={() => {
@@ -182,7 +182,7 @@ export default function PremiumHeader({ onNavigate, currentSection }: PremiumHea
                   className={`text-right px-4 py-2 font-medium transition-colors ${
                     currentSection === 'home' 
                       ? 'text-[var(--bold-red)] neon-text' 
-                      : 'text-[var(--ice-white)]'
+                      : 'text-[var(--matte-black)]'
                   }`}
                 >
                   خانه
@@ -196,13 +196,13 @@ export default function PremiumHeader({ onNavigate, currentSection }: PremiumHea
                   className={`text-right px-4 py-2 font-medium transition-colors ${
                     currentSection === 'about' 
                       ? 'text-[var(--bold-red)] neon-text' 
-                      : 'text-[var(--ice-white)]'
+                      : 'text-[var(--matte-black)]'
                   }`}
                 >
                   درباره ما
                 </button>
                 
-                <div className="px-4 pt-2 border-t border-[var(--bold-red)]/20">
+                <div className="px-4 pt-2 border-t-2 border-[var(--neon-red)] neon-separator">
                   <AuthControls onShowAdmin={() => {
                     setShowAdminPanel(true);
                     setIsMobileMenuOpen(false);

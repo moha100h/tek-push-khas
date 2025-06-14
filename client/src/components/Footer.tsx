@@ -26,7 +26,7 @@ export default function Footer() {
   });
 
   return (
-    <footer className="bg-[var(--matte-black)] text-white py-12">
+    <footer className="bg-[var(--ice-white)] text-[var(--matte-black)] py-12 border-t-2 border-[var(--neon-red)] neon-separator">
       <div className="container mx-auto px-4">
         <div className="text-center">
           {/* Social Media Links */}
