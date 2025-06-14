@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { TshirtImage } from "@shared/schema";
-import { ChevronLeft, ChevronRight, X, Eye, ShoppingBag } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { X, ZoomIn, Star, ShoppingBag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface ProductDetailModalProps {
   product: TshirtImage;
@@ -15,50 +15,95 @@ function ProductDetailModal({ product, isOpen, onClose }: ProductDetailModalProp
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-[var(--ice-white)] border-2 border-[var(--neon-red)] neon-border rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden relative shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-lg">
+      <div className="relative max-w-6xl w-full max-h-[90vh] overflow-hidden bg-[var(--pure-white)] rounded-3xl shadow-2xl border border-[var(--medium-gray)]">
+        
+        {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 bg-[var(--bold-red)] hover:bg-[var(--bold-red)]/80 rounded-full transition-all neon-border"
+          className="absolute top-6 left-6 z-10 p-3 bg-black/20 backdrop-blur-sm rounded-full hover:bg-black/40 transition-colors"
         >
-          <X className="w-5 h-5 text-white" />
+          <X className="w-6 h-6 text-white" />
         </button>
         
-        <div className="grid md:grid-cols-5 gap-0">
-          {/* Product Image - Larger */}
-          <div className="md:col-span-3 relative bg-[var(--light-gray)] flex items-center justify-center min-h-[500px] border-l-2 border-[var(--neon-red)]/30">
+        <div className="grid md:grid-cols-5 gap-0 h-full">
+          
+          {/* Product Image */}
+          <div className="md:col-span-3 relative bg-[var(--light-gray)] flex items-center justify-center min-h-[500px] border-l-2 border-[var(--primary-red)]/30">
             <img
               src={product.imageUrl}
               alt={product.title || product.alt}
               className="max-w-full max-h-full object-contain modal-image"
               style={{ maxHeight: '600px' }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--neon-red)]/5 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--primary-red)]/5 to-transparent pointer-events-none" />
+            
+            {/* Quality Badge */}
+            <div className="absolute top-4 right-4">
+              <div className="flex items-center space-x-reverse space-x-2 bg-[var(--pure-white)]/90 backdrop-blur-sm px-3 py-2 rounded-full border border-[var(--medium-gray)]">
+                <Star className="w-4 h-4 text-[var(--primary-red)] fill-current" />
+                <span className="text-sm font-medium text-[var(--text-black)]">کیفیت پریمیوم</span>
+              </div>
+            </div>
           </div>
           
           {/* Product Details */}
-          <div className="md:col-span-2 p-6 space-y-6 bg-[var(--ice-white)]">
-            <div>
-              <h3 className="text-2xl font-bold text-[var(--matte-black)] mb-3 neon-text">
-                {product.title || product.alt}
-              </h3>
-              <Badge className="bg-[var(--bold-red)]/20 text-[var(--bold-red)] border-[var(--bold-red)]/30 neon-border">
-                تک پوش خاص
-              </Badge>
-            </div>
-            
-            {product.size && (
-              <div className="space-y-2">
-                <span className="text-[var(--matte-black)]/70 text-sm">سایز:</span>
-                <div className="text-[var(--matte-black)] font-medium">{product.size}</div>
+          <div className="md:col-span-2 p-8 space-y-6 bg-[var(--ice-white)] flex flex-col justify-between">
+            <div className="space-y-6">
+              
+              {/* Header */}
+              <div className="space-y-4">
+                <h3 className="text-3xl font-bold text-[var(--text-black)] neon-text leading-tight">
+                  {product.title || product.alt}
+                </h3>
+                <Badge className="bg-[var(--primary-red)]/20 text-[var(--primary-red)] border-[var(--primary-red)]/30 neon-border px-4 py-2 text-sm font-medium">
+                  تک پوش خاص
+                </Badge>
               </div>
-            )}
-            
-            <div className="border-t-2 border-[var(--neon-red)]/30 pt-4 neon-separator">
-              <span className="text-[var(--matte-black)]/70 text-sm mb-3 block">توضیحات:</span>
-              <p className="text-[var(--matte-black)] text-sm leading-relaxed">
-                {product.description || "این طراحی منحصر به فرد از مجموعه تک پوش خاص، ترکیبی از هنر مدرن و کیفیت بالا است که سبک منحصر به فرد شما را نمایان می‌کند."}
-              </p>
+              
+              {/* Size Info */}
+              {product.size && (
+                <div className="space-y-3">
+                  <span className="text-[var(--text-gray)] text-sm font-medium">سایز موجود:</span>
+                  <div className="flex items-center space-x-reverse space-x-3">
+                    <div className="px-4 py-2 bg-[var(--light-gray)] text-[var(--text-black)] font-semibold rounded-xl border border-[var(--medium-gray)]">
+                      {product.size}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Price Display */}
+              {product.price && (
+                <div className="space-y-3">
+                  <span className="text-[var(--text-gray)] text-sm font-medium">قیمت:</span>
+                  <div className="flex items-center space-x-reverse space-x-2">
+                    <span className="text-2xl font-bold text-[var(--primary-red)] neon-text">
+                      {product.price}
+                    </span>
+                    <span className="text-[var(--text-gray)] text-sm">تومان</span>
+                  </div>
+                </div>
+              )}
+              
+              {/* Separator */}
+              <div className="neon-separator"></div>
+              
+              {/* Description */}
+              <div className="space-y-3">
+                <span className="text-[var(--text-gray)] text-sm font-medium">توضیحات محصول:</span>
+                <p className="text-[var(--text-black)] leading-relaxed">
+                  {product.description || "این طراحی منحصر به فرد از مجموعه تک پوش خاص، ترکیبی از هنر مدرن و کیفیت بالا است که سبک منحصر به فرد شما را نمایان می‌کند."}
+                </p>
+              </div>
+            </div>
+
+            {/* Action Button */}
+            <div className="pt-6 border-t border-[var(--medium-gray)]">
+              <Button className="w-full modern-btn text-lg py-4 rounded-2xl">
+                <ShoppingBag className="w-5 h-5 ml-3" />
+                مشاهده بیشتر
+              </Button>
             </div>
           </div>
         </div>
@@ -68,137 +113,146 @@ function ProductDetailModal({ product, isOpen, onClose }: ProductDetailModalProp
 }
 
 export default function ModernTShirtGallery() {
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState<TshirtImage | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data: tshirtImages = [], isLoading } = useQuery<TshirtImage[]>({
+  const { data: tshirtImages, isLoading } = useQuery<TshirtImage[]>({
     queryKey: ["/api/tshirt-images"],
   });
 
-  // Auto-advance slider
-  useEffect(() => {
-    if (tshirtImages.length > 1) {
-      const interval = setInterval(() => {
-        setCurrentIndex((prev) => (prev + 1) % tshirtImages.length);
-      }, 5000);
-      return () => clearInterval(interval);
-    }
-  }, [tshirtImages.length]);
-
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % tshirtImages.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + tshirtImages.length) % tshirtImages.length);
-  };
-
   const openProductDetail = (product: TshirtImage) => {
     setSelectedProduct(product);
-    setIsModalOpen(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const closeProductDetail = () => {
     setSelectedProduct(null);
   };
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-2 border-[var(--bold-red)] border-t-transparent rounded-full animate-spin"></div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 p-8">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={i}
+            className="modern-card animate-pulse h-96"
+          >
+            <div className="bg-[var(--light-gray)] h-64 rounded-t-2xl" />
+            <div className="p-6 space-y-3">
+              <div className="h-4 bg-[var(--light-gray)] rounded" />
+              <div className="h-3 bg-[var(--light-gray)] rounded w-2/3" />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
 
-  if (!tshirtImages.length) {
+  if (!tshirtImages?.length) {
     return (
       <div className="text-center py-20">
-        <p className="text-[var(--ice-white)]/60">محصولی برای نمایش وجود ندارد</p>
+        <div className="max-w-md mx-auto space-y-6">
+          <div className="w-24 h-24 mx-auto bg-[var(--light-gray)] rounded-full flex items-center justify-center">
+            <ShoppingBag className="w-10 h-10 text-[var(--text-gray)]" />
+          </div>
+          <h3 className="text-xl font-semibold text-[var(--text-black)]">
+            هنوز محصولی اضافه نشده
+          </h3>
+          <p className="text-[var(--text-gray)]">
+            به زودی مجموعه زیبای ما را خواهید دید
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="relative">
-      {/* Main Gallery Display */}
-      <div className="max-w-6xl mx-auto">
-        {/* Grid Layout for T-Shirts */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {tshirtImages.map((image, index) => (
-            <div
-              key={image.id}
-              className="group relative bg-[var(--ice-white)] rounded-2xl overflow-hidden border-2 border-[var(--neon-red)]/30 neon-border hover:border-[var(--neon-red)] shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
-              onClick={() => openProductDetail(image)}
-            >
-              {/* T-Shirt Image */}
-              <div className="relative aspect-[4/5] bg-[var(--light-gray)]">
-                <img
-                  src={image.imageUrl}
-                  alt={image.title || image.alt}
-                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300 tshirt-image"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[var(--neon-red)]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                
-                {/* Overlay Info */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[var(--ice-white)]/95 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <h3 className="text-[var(--matte-black)] font-medium text-sm mb-1 line-clamp-1">
-                    {image.title || image.alt}
-                  </h3>
-                  <p className="text-[var(--matte-black)]/70 text-xs line-clamp-2">
-                    {image.description || "کلیک برای مشاهده جزئیات"}
-                  </p>
-                </div>
-                
-                {/* View Button */}
-                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="p-2 bg-[var(--bold-red)] rounded-full neon-border">
-                    <Eye className="w-4 h-4 text-white" />
-                  </div>
+    <>
+      {/* Gallery Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 p-8">
+        {tshirtImages.map((tshirt, index) => (
+          <div
+            key={tshirt.id}
+            className="modern-card group cursor-pointer overflow-hidden"
+            onClick={() => openProductDetail(tshirt)}
+            style={{ 
+              animationDelay: `${index * 100}ms` 
+            }}
+          >
+            
+            {/* Image Container */}
+            <div className="relative overflow-hidden rounded-t-2xl bg-[var(--light-gray)] h-64">
+              <img
+                src={tshirt.imageUrl}
+                alt={tshirt.title || tshirt.alt}
+                className="w-full h-full object-contain tshirt-image transition-transform duration-500 group-hover:scale-110"
+              />
+              
+              {/* Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              {/* Zoom Icon */}
+              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                <div className="p-2 bg-[var(--pure-white)]/90 backdrop-blur-sm rounded-full border border-[var(--medium-gray)]">
+                  <ZoomIn className="w-4 h-4 text-[var(--primary-red)]" />
                 </div>
               </div>
+
+              {/* Premium Badge */}
+              <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                <Badge className="bg-[var(--primary-red)]/90 text-white border-0 backdrop-blur-sm">
+                  پریمیوم
+                </Badge>
+              </div>
+            </div>
+            
+            {/* Content */}
+            <div className="p-6 space-y-4">
               
-              {/* Product Info */}
-              <div className="p-4 border-t-2 border-[var(--neon-red)]/20">
-                <h3 className="text-[var(--matte-black)] font-medium mb-1 line-clamp-1 neon-text">
-                  {image.title || image.alt}
-                </h3>
-                {image.size && (
-                  <p className="text-[var(--matte-black)]/60 text-sm">
-                    سایز: {image.size}
-                  </p>
+              {/* Title */}
+              <h3 className="font-bold text-lg text-[var(--text-black)] line-clamp-2 group-hover:text-[var(--primary-red)] transition-colors">
+                {tshirt.title || tshirt.alt}
+              </h3>
+              
+              {/* Details Row */}
+              <div className="flex items-center justify-between">
+                {tshirt.size && (
+                  <span className="text-sm text-[var(--text-gray)] bg-[var(--light-gray)] px-3 py-1 rounded-lg">
+                    {tshirt.size}
+                  </span>
+                )}
+                
+                {tshirt.price && (
+                  <span className="font-bold text-[var(--primary-red)] neon-text">
+                    {tshirt.price} ت
+                  </span>
                 )}
               </div>
+              
+              {/* Description Preview */}
+              {tshirt.description && (
+                <p className="text-sm text-[var(--text-gray)] line-clamp-2 leading-relaxed">
+                  {tshirt.description}
+                </p>
+              )}
+              
+              {/* Action Hint */}
+              <div className="pt-2 border-t border-[var(--medium-gray)]">
+                <span className="text-xs text-[var(--text-gray)] group-hover:text-[var(--primary-red)] transition-colors">
+                  برای مشاهده جزئیات کلیک کنید
+                </span>
+              </div>
             </div>
-          ))}
-        </div>
-        
-        {/* Empty State */}
-        {tshirtImages.length === 0 && (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800/50 flex items-center justify-center">
-              <Eye className="w-8 h-8 text-[var(--bold-red)]" />
-            </div>
-            <h3 className="text-[var(--ice-white)] text-lg font-medium mb-2">
-              هنوز طراحی‌ای اضافه نشده
-            </h3>
-            <p className="text-[var(--ice-white)]/60 text-sm">
-              طراحی‌های منحصر به فرد تک پوش خاص به زودی اضافه خواهند شد
-            </p>
           </div>
-        )}
+        ))}
       </div>
-      
+
       {/* Product Detail Modal */}
       {selectedProduct && (
         <ProductDetailModal
           product={selectedProduct}
-          isOpen={isModalOpen}
-          onClose={closeModal}
+          isOpen={!!selectedProduct}
+          onClose={closeProductDetail}
         />
       )}
-    </div>
+    </>
   );
 }
