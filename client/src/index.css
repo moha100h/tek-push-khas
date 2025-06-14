@@ -24,14 +24,16 @@
   --ring: hsl(0, 0%, 10%);
   --radius: 0.5rem;
   
-  /* Minimal brand colors - Enhanced contrast */
-  --ice-white: hsl(0, 0%, 100%);
-  --soft-gray: hsl(0, 0%, 97%);
-  --matte-black: hsl(0, 0%, 8%);
+  /* Ice White Theme Colors */
+  --ice-white: hsl(210, 40%, 98%);
+  --soft-gray: hsl(210, 20%, 95%);
+  --matte-black: hsl(220, 8%, 15%);
   --bold-red: hsl(0, 84%, 50%);
-  --accent-gold: hsl(38, 92%, 50%);
-  --glass-bg: rgba(255, 255, 255, 0.8);
-  --glass-border: rgba(255, 255, 255, 0.2);
+  --neon-red: hsl(0, 100%, 50%);
+  --light-gray: hsl(210, 40%, 96%);
+  --medium-gray: hsl(210, 15%, 90%);
+  --glass-bg: rgba(248, 250, 252, 0.9);
+  --glass-border: rgba(220, 38, 38, 0.3);
   
   /* Advanced shadows */
   --shadow-subtle: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
@@ -39,10 +41,11 @@
   --shadow-large: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   --shadow-glow: 0 0 0 1px rgba(59, 130, 246, 0.5), 0 4px 6px -1px rgba(59, 130, 246, 0.1);
   
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, var(--bold-red) 0%, hsl(346, 87%, 35%) 100%);
-  --gradient-surface: linear-gradient(135deg, var(--ice-white) 0%, var(--soft-gray) 100%);
-  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+  /* Ice White Theme Gradients */
+  --gradient-primary: linear-gradient(135deg, var(--bold-red) 0%, hsl(0, 90%, 45%) 100%);
+  --gradient-surface: linear-gradient(135deg, var(--ice-white) 0%, var(--light-gray) 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.85) 100%);
+  --gradient-neon: linear-gradient(90deg, transparent 0%, var(--neon-red) 50%, transparent 100%);
 }
 
 .dark {
@@ -73,7 +76,7 @@
   }
 
   body {
-    @apply bg-[var(--off-white)] text-[var(--matte-black)] antialiased;
+    @apply bg-[var(--ice-white)] text-[var(--matte-black)] antialiased;
     font-family: 'Vazirmatn', sans-serif;
   }
   
@@ -164,7 +167,30 @@
   
   /* Neon effects */
   .neon-text {
+    color: var(--bold-red);
+    text-shadow: 
+      0 0 5px var(--neon-red),
+      0 0 10px var(--neon-red),
+      0 0 15px var(--neon-red);
     animation: neonPulse 2s ease-in-out infinite alternate;
+  }
+
+  /* Neon separator lines */
+  .neon-separator {
+    height: 2px;
+    background: var(--gradient-neon);
+    box-shadow: 
+      0 0 10px var(--neon-red),
+      0 0 20px var(--neon-red),
+      0 0 30px var(--neon-red);
+    animation: neonPulse 2s ease-in-out infinite alternate;
+  }
+
+  .neon-border {
+    border: 1px solid var(--neon-red);
+    box-shadow: 
+      0 0 5px var(--neon-red),
+      inset 0 0 5px var(--neon-red);
   }
   
   .neon-glow {
