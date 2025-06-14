@@ -42,7 +42,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   title={socialTooltips[link.platform as keyof typeof socialTooltips]}
-                  className="text-[var(--ice-white)]/60 hover:text-[var(--bold-red)] transition-all duration-300 hover:scale-110 neon-glow"
+                  className="text-[var(--matte-black)]/60 hover:text-[var(--bold-red)] transition-all duration-300 hover:scale-110 neon-glow"
                 >
                   <IconComponent className="h-6 w-6" />
                 </a>
@@ -51,7 +51,7 @@ export default function Footer() {
           </div>
           
           {/* Copyright */}
-          <p className="text-[var(--ice-white)]/60 text-sm">
+          <p className="text-[var(--matte-black)]/60 text-sm">
             {copyrightSettings?.text || "© ۱۴۰۳ تک پوش خاص. تمامی حقوق محفوظ است."}
           </p>
         </div>
