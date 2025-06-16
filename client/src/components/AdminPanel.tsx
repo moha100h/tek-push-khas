@@ -19,7 +19,29 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { X, Upload, Trash2, LogOut } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { 
+  X, 
+  Upload, 
+  Trash2, 
+  LogOut, 
+  Settings, 
+  Image as ImageIcon, 
+  Share2, 
+  Copyright, 
+  Info,
+  Phone,
+  Mail,
+  MapPin,
+  Edit3,
+  Save,
+  Palette,
+  Type,
+  Eye,
+  EyeOff
+} from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface AdminPanelProps {
@@ -28,6 +50,10 @@ interface AdminPanelProps {
 
 export default function AdminPanel({ onClose }: AdminPanelProps) {
   const { toast } = useToast();
+  const { logoutMutation } = useAuth();
+  const [editingImage, setEditingImage] = useState<TshirtImage | null>(null);
+  
+  // Form states
   const [brandForm, setBrandForm] = useState<InsertBrandSettings>({
     name: "",
     slogan: "",
@@ -52,25 +78,10 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
     tiktok: "",
     youtube: "",
   });
-  const [editingImage, setEditingImage] = useState<TshirtImage | null>(null);
-  const [imageForm, setImageForm] = useState({
-    title: "",
-    description: "",
-    size: "",
-    price: "",
-  });
 
-  // Queries
+  // Data queries
   const { data: brandSettings } = useQuery<BrandSettings>({
     queryKey: ["/api/brand-settings"],
-  });
-
-  const { data: adminImages = [] } = useQuery<TshirtImage[]>({
-    queryKey: ["/api/admin/tshirt-images"],
-  });
-
-  const { data: socialLinks = [] } = useQuery<SocialLink[]>({
-    queryKey: ["/api/social-links"],
   });
 
   const { data: copyrightSettings } = useQuery<CopyrightSettings>({
@@ -81,781 +92,698 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
     queryKey: ["/api/about-content"],
   });
 
-  // Update forms when data changes
-  useEffect(() => {
-    if (brandSettings) {
-      setBrandForm({
-        name: brandSettings.name,
-        slogan: brandSettings.slogan,
-      });
-    }
-  }, [brandSettings]);
+  const { data: socialLinks } = useQuery<SocialLink[]>({
+    queryKey: ["/api/social-links"],
+  });
 
-  useEffect(() => {
-    if (socialLinks) {
-      const socialMap = socialLinks.reduce((acc: any, link: any) => {
-        acc[link.platform] = link.url;
-        return acc;
-      }, {});
-      setSocialForm({ ...socialForm, ...socialMap });
-    }
-  }, [socialLinks]);
-
-  useEffect(() => {
-    if (copyrightSettings) {
-      setCopyrightForm({ text: copyrightSettings.text });
-    }
-  }, [copyrightSettings]);
-
-  useEffect(() => {
-    if (aboutContent) {
-      setAboutForm({
-        title: aboutContent.title,
-        subtitle: aboutContent.subtitle,
-        philosophyTitle: aboutContent.philosophyTitle,
-        philosophyText1: aboutContent.philosophyText1,
-        philosophyText2: aboutContent.philosophyText2,
-        contactTitle: aboutContent.contactTitle,
-        contactEmail: aboutContent.contactEmail,
-        contactPhone: aboutContent.contactPhone,
-        contactAddress: aboutContent.contactAddress,
-      });
-    }
-  }, [aboutContent]);
+  const { data: tshirtImages } = useQuery<TshirtImage[]>({
+    queryKey: ["/api/tshirt-images"],
+  });
 
   // Mutations
   const updateBrandMutation = useMutation({
     mutationFn: async (data: InsertBrandSettings) => {
-      return await apiRequest("PUT", "/api/admin/brand-settings", data);
+      const res = await apiRequest("PUT", "/api/brand-settings", data);
+      return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/brand-settings"] });
-      toast({ title: "تنظیمات برند با موفقیت به‌روزرسانی شد" });
+      toast({
+        title: "✓ تنظیمات برند بروزرسانی شد",
+        description: "تغییرات با موفقیت ذخیره شد",
+      });
     },
-    onError: () => {
-      toast({ 
-        title: "خطا در به‌روزرسانی تنظیمات برند", 
-        variant: "destructive" 
+    onError: (error: Error) => {
+      toast({
+        title: "خطا در بروزرسانی",
+        description: error.message,
+        variant: "destructive",
       });
     },
   });
 
-  const uploadLogoMutation = useMutation({
+  const uploadImageMutation = useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
-      formData.append("logo", file);
-      return await fetch("/api/admin/upload-logo", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
+      formData.append("image", file);
+      const res = await apiRequest("POST", "/api/upload-image", formData);
+      return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/brand-settings"] });
-      toast({ title: "لوگو با موفقیت آپلود شد" });
+      queryClient.invalidateQueries({ queryKey: ["/api/tshirt-images"] });
+      toast({
+        title: "✓ تصویر آپلود شد",
+        description: "تصویر جدید با موفقیت اضافه شد",
+      });
     },
-    onError: () => {
-      toast({ 
-        title: "خطا در آپلود لوگو", 
-        variant: "destructive" 
+    onError: (error: Error) => {
+      toast({
+        title: "خطا در آپلود",
+        description: error.message,
+        variant: "destructive",
       });
     },
   });
 
-  const uploadImagesMutation = useMutation({
+  const bulkUploadMutation = useMutation({
     mutationFn: async (files: FileList) => {
       const formData = new FormData();
-      Array.from(files).forEach(file => {
+      Array.from(files).forEach((file) => {
         formData.append("images", file);
       });
-      return await fetch("/api/admin/upload-tshirt-images", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
+      const res = await apiRequest("POST", "/api/upload-images", formData);
+      return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/tshirt-images"] });
       queryClient.invalidateQueries({ queryKey: ["/api/tshirt-images"] });
-      toast({ title: "تصاویر با موفقیت آپلود شدند" });
-    },
-    onError: () => {
-      toast({ 
-        title: "خطا در آپلود تصاویر", 
-        variant: "destructive" 
+      toast({
+        title: "✓ تصاویر آپلود شدند",
+        description: "همه تصاویر با موفقیت اضافه شدند",
       });
     },
-  });
-
-  const deleteImageMutation = useMutation({
-    mutationFn: async (id: number) => {
-      return await apiRequest("DELETE", `/api/admin/tshirt-images/${id}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/tshirt-images"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/tshirt-images"] });
-      toast({ title: "تصویر با موفقیت حذف شد" });
-    },
-    onError: () => {
-      toast({ 
-        title: "خطا در حذف تصویر", 
-        variant: "destructive" 
-      });
-    },
-  });
-
-  const updateSocialMutation = useMutation({
-    mutationFn: async (data: typeof socialForm) => {
-      const socialArray = Object.entries(data)
-        .filter(([, url]) => url.trim())
-        .map(([platform, url]) => ({
-          platform,
-          url: url.trim(),
-          isActive: true,
-        }));
-      return await apiRequest("PUT", "/api/admin/social-links", socialArray);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/social-links"] });
-      toast({ title: "لینک‌های شبکه‌های اجتماعی به‌روزرسانی شدند" });
-    },
-    onError: () => {
-      toast({ 
-        title: "خطا در به‌روزرسانی لینک‌ها", 
-        variant: "destructive" 
+    onError: (error: Error) => {
+      toast({
+        title: "خطا در آپلود دسته‌ای",
+        description: error.message,
+        variant: "destructive",
       });
     },
   });
 
   const updateCopyrightMutation = useMutation({
     mutationFn: async (data: InsertCopyrightSettings) => {
-      return await apiRequest("PUT", "/api/admin/copyright-settings", data);
+      const res = await apiRequest("PUT", "/api/copyright-settings", data);
+      return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/copyright-settings"] });
-      toast({ title: "تنظیمات کپی‌رایت به‌روزرسانی شد" });
+      toast({
+        title: "✓ تنظیمات کپی‌رایت بروزرسانی شد",
+        description: "تغییرات با موفقیت ذخیره شد",
+      });
     },
-    onError: () => {
-      toast({ 
-        title: "خطا در به‌روزرسانی کپی‌رایت", 
-        variant: "destructive" 
+    onError: (error: Error) => {
+      toast({
+        title: "خطا در بروزرسانی",
+        description: error.message,
+        variant: "destructive",
       });
     },
   });
 
   const updateAboutMutation = useMutation({
     mutationFn: async (data: InsertAboutContent) => {
-      return await apiRequest("PUT", "/api/admin/about-content", data);
+      const res = await apiRequest("PUT", "/api/about-content", data);
+      return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/about-content"] });
-      toast({ title: "محتوای درباره ما به‌روزرسانی شد" });
+      toast({
+        title: "✓ محتوای درباره ما بروزرسانی شد",
+        description: "تغییرات با موفقیت ذخیره شد",
+      });
     },
-    onError: () => {
-      toast({ 
-        title: "خطا در به‌روزرسانی محتوای درباره ما", 
-        variant: "destructive" 
+    onError: (error: Error) => {
+      toast({
+        title: "خطا در بروزرسانی",
+        description: error.message,
+        variant: "destructive",
       });
     },
   });
 
-  const updateImageDetailsMutation = useMutation({
-    mutationFn: async (data: { id: number; title?: string; description?: string; size?: string; price?: string }) => {
-      return await apiRequest("PUT", `/api/admin/tshirt-images/${data.id}`, {
-        title: data.title,
-        description: data.description,
-        size: data.size,
-        price: data.price,
+  // Initialize forms with existing data
+  useEffect(() => {
+    if (brandSettings) {
+      setBrandForm({
+        name: brandSettings.name || "",
+        slogan: brandSettings.slogan || "",
       });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/tshirt-images"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/tshirt-images"] });
-      setEditingImage(null);
-      setImageForm({ title: "", description: "", size: "", price: "" });
-      toast({ title: "جزئیات تصویر به‌روزرسانی شد" });
-    },
-    onError: () => {
-      toast({ 
-        title: "خطا در به‌روزرسانی جزئیات تصویر", 
-        variant: "destructive" 
+    }
+  }, [brandSettings]);
+
+  useEffect(() => {
+    if (copyrightSettings) {
+      setCopyrightForm({
+        text: copyrightSettings.text || "",
       });
-    },
-  });
-
-  const handleBrandSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    updateBrandMutation.mutate(brandForm);
-  };
-
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      uploadLogoMutation.mutate(file);
     }
-  };
+  }, [copyrightSettings]);
 
-  const handleImagesUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      uploadImagesMutation.mutate(files);
+  useEffect(() => {
+    if (aboutContent) {
+      setAboutForm({
+        title: aboutContent.title || "",
+        subtitle: aboutContent.subtitle || "",
+        philosophyTitle: aboutContent.philosophyTitle || "",
+        philosophyText1: aboutContent.philosophyText1 || "",
+        philosophyText2: aboutContent.philosophyText2 || "",
+        contactTitle: aboutContent.contactTitle || "",
+        contactEmail: aboutContent.contactEmail || "",
+        contactPhone: aboutContent.contactPhone || "",
+        contactAddress: aboutContent.contactAddress || "",
+      });
     }
-  };
+  }, [aboutContent]);
 
-  const handleSocialSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    updateSocialMutation.mutate(socialForm);
-  };
-
-  const handleCopyrightSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    updateCopyrightMutation.mutate(copyrightForm);
-  };
-
-  const handleAboutSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    updateAboutMutation.mutate(aboutForm);
-  };
+  useEffect(() => {
+    if (socialLinks) {
+      const links = socialLinks.reduce((acc, link) => {
+        acc[link.platform] = link.url;
+        return acc;
+      }, {} as Record<string, string>);
+      
+      setSocialForm({
+        instagram: links.instagram || "",
+        telegram: links.telegram || "",
+        tiktok: links.tiktok || "",
+        youtube: links.youtube || "",
+      });
+    }
+  }, [socialLinks]);
 
   const handleEditImage = (image: TshirtImage) => {
     setEditingImage(image);
-    setImageForm({
-      title: image.title || "",
-      description: image.description || "",
-      size: image.size || "",
-      price: image.price || "",
-    });
   };
 
-  const handleImageDetailsSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingImage) return;
-    
-    updateImageDetailsMutation.mutate({
-      id: editingImage.id,
-      ...imageForm,
-    });
-  };
-
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("/api/logout", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      
-      if (response.ok) {
-        // Clear all cached data
-        queryClient.clear();
-        queryClient.setQueryData(["/api/user"], null);
-        
-        // Close admin panel and redirect
-        onClose();
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 100);
-      } else {
-        throw new Error("Logout failed");
-      }
-    } catch (error) {
-      console.error("Logout error:", error);
-      // Force redirect even if logout fails
-      queryClient.clear();
-      onClose();
-      window.location.href = "/";
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      uploadImageMutation.mutate(file);
     }
   };
 
+  const handleBulkUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      bulkUploadMutation.mutate(files);
+    }
+  };
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+    onClose();
+  };
+
   return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto admin-scroll">
-        <DialogHeader>
-          <DialogTitle className="flex justify-between items-center">
-            <span className="text-2xl font-bold text-[var(--matte-black)]">پنل مدیریت</span>
-            <div className="flex items-center space-x-reverse space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm">
+      <div className="flex items-center justify-center p-4 min-h-screen">
+        <div className="bg-[var(--ice-white)] rounded-2xl shadow-2xl max-w-7xl w-full max-h-[95vh] overflow-hidden border border-[var(--medium-gray)]">
+          
+          {/* Modern Header */}
+          <div className="flex items-center justify-between p-6 border-b-2 border-[var(--primary-red)]/30 bg-gradient-to-r from-[var(--ice-white)] to-[var(--soft-gray)]">
+            <div className="flex items-center space-x-reverse space-x-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-[var(--primary-red)] to-[var(--dark-red)] rounded-xl flex items-center justify-center shadow-lg">
+                <Settings className="text-white w-6 h-6" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold red-text">پنل مدیریت جامع</h2>
+                <p className="text-[var(--text-gray)] text-sm">مدیریت کامل محتوای وب‌سایت</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-reverse space-x-3">
+              <Button 
+                variant="outline" 
                 onClick={handleLogout}
-                className="text-red-600 hover:text-red-700"
+                className="flex items-center space-x-reverse space-x-2 border-[var(--primary-red)] text-[var(--primary-red)] hover:bg-[var(--primary-red)] hover:text-white"
               >
-                <LogOut className="h-4 w-4 ml-2" />
-                خروج
+                <LogOut className="w-4 h-4" />
+                <span>خروج</span>
               </Button>
-              <Button variant="ghost" size="sm" onClick={onClose}>
-                <X className="h-4 w-4" />
+              <Button 
+                variant="ghost" 
+                onClick={onClose} 
+                className="p-3 hover:bg-[var(--light-gray)] rounded-xl transition-colors"
+              >
+                <X className="h-6 w-6 text-[var(--text-gray)]" />
               </Button>
             </div>
-          </DialogTitle>
-        </DialogHeader>
+          </div>
 
-        <div className="grid md:grid-cols-2 gap-6 p-6">
-          {/* Brand Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle>تنظیمات برند</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <form onSubmit={handleBrandSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="brandName">نام برند</Label>
-                  <Input
-                    id="brandName"
-                    value={brandForm.name}
-                    onChange={(e) => setBrandForm({ ...brandForm, name: e.target.value })}
-                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="brandSlogan">شعار</Label>
-                  <Input
-                    id="brandSlogan"
-                    value={brandForm.slogan}
-                    onChange={(e) => setBrandForm({ ...brandForm, slogan: e.target.value })}
-                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="logoUpload">آپلود لوگو</Label>
-                  <Input
-                    id="logoUpload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleLogoUpload}
-                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                  />
-                </div>
-
-                <Button 
-                  type="submit" 
-                  disabled={updateBrandMutation.isPending}
-                  className="w-full bg-[var(--bold-red)] hover:bg-red-700 text-white"
-                >
-                  {updateBrandMutation.isPending ? "در حال ذخیره..." : "ذخیره تغییرات"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-
-          {/* Image Management */}
-          <Card>
-            <CardHeader>
-              <CardTitle>مدیریت گالری تی‌شرت‌ها</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <Label htmlFor="imageUpload">افزودن تصاویر جدید</Label>
-                <Input
-                  id="imageUpload"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImagesUpload}
-                  className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  می‌توانید چندین تصویر همزمان انتخاب کنید
-                </p>
-              </div>
+          {/* Main Content */}
+          <div className="h-[calc(95vh-100px)]">
+            <Tabs defaultValue="brand" className="h-full">
               
-              <div>
-                <Label>تصاویر گالری</Label>
-                <div className="space-y-4 mt-3">
-                  {adminImages.map((image) => (
-                    <div key={image.id} className="border border-gray-700 rounded-lg p-4 bg-gray-900/30">
-                      <div className="grid md:grid-cols-4 gap-4">
-                        {/* Image Preview */}
-                        <div className="relative">
-                          <img
-                            src={image.imageUrl}
-                            alt={image.alt}
-                            className="w-full h-24 object-cover rounded"
+              {/* Professional Tab Navigation */}
+              <div className="border-b border-[var(--light-gray)] bg-[var(--soft-gray)]/50">
+                <TabsList className="w-full h-16 bg-transparent justify-start p-0 space-x-reverse space-x-2">
+                  <TabsTrigger 
+                    value="brand" 
+                    className="flex items-center space-x-reverse space-x-2 px-6 py-3 data-[state=active]:bg-[var(--primary-red)] data-[state=active]:text-white data-[state=active]:shadow-lg"
+                  >
+                    <Palette className="w-4 h-4" />
+                    <span>برند و هویت</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="images" 
+                    className="flex items-center space-x-reverse space-x-2 px-6 py-3 data-[state=active]:bg-[var(--primary-red)] data-[state=active]:text-white data-[state=active]:shadow-lg"
+                  >
+                    <ImageIcon className="w-4 h-4" />
+                    <span>گالری تصاویر</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="about" 
+                    className="flex items-center space-x-reverse space-x-2 px-6 py-3 data-[state=active]:bg-[var(--primary-red)] data-[state=active]:text-white data-[state=active]:shadow-lg"
+                  >
+                    <Info className="w-4 h-4" />
+                    <span>درباره ما</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="social" 
+                    className="flex items-center space-x-reverse space-x-2 px-6 py-3 data-[state=active]:bg-[var(--primary-red)] data-[state=active]:text-white data-[state=active]:shadow-lg"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    <span>شبکه‌های اجتماعی</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="copyright" 
+                    className="flex items-center space-x-reverse space-x-2 px-6 py-3 data-[state=active]:bg-[var(--primary-red)] data-[state=active]:text-white data-[state=active]:shadow-lg"
+                  >
+                    <Copyright className="w-4 h-4" />
+                    <span>کپی‌رایت</span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+
+              <ScrollArea className="h-[calc(100%-64px)]">
+                
+                {/* Brand Settings Tab */}
+                <TabsContent value="brand" className="p-6 space-y-6">
+                  <Card className="border-[var(--light-gray)] shadow-sm">
+                    <CardHeader className="bg-gradient-to-r from-[var(--soft-gray)] to-[var(--ice-white)] border-b border-[var(--light-gray)]">
+                      <CardTitle className="flex items-center space-x-reverse space-x-3 text-[var(--text-black)]">
+                        <Palette className="w-5 h-5 text-[var(--primary-red)]" />
+                        <span>تنظیمات برند و هویت بصری</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6 space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="brand-name" className="text-[var(--text-black)] font-medium">نام برند</Label>
+                          <Input
+                            id="brand-name"
+                            value={brandForm.name}
+                            onChange={(e) => setBrandForm(prev => ({ ...prev, name: e.target.value }))}
+                            placeholder="نام برند خود را وارد کنید"
+                            className="border-[var(--light-gray)] focus:border-[var(--primary-red)]"
                           />
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => deleteImageMutation.mutate(image.id)}
-                            className="absolute top-1 right-1 w-6 h-6 p-0"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
                         </div>
-                        
-                        {/* Image Details */}
-                        <div className="md:col-span-3 space-y-3">
-                          <div className="grid md:grid-cols-2 gap-3">
-                            <div>
-                              <Label className="text-xs">عنوان</Label>
-                              <div className="text-sm text-white">
-                                {image.title || "بدون عنوان"}
-                              </div>
-                            </div>
-                            <div>
-                              <Label className="text-xs">سایز</Label>
-                              <div className="text-sm text-white">
-                                {image.size || "مشخص نشده"}
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <Label className="text-xs">توضیحات</Label>
-                            <div className="text-sm text-white">
-                              {image.description || "توضیحی وجود ندارد"}
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className={`px-2 py-1 text-xs rounded ${
-                                image.isActive 
-                                  ? 'bg-green-500/20 text-green-400' 
-                                  : 'bg-red-500/20 text-red-400'
-                              }`}>
-                                {image.isActive ? 'فعال' : 'غیرفعال'}
-                              </span>
-                              <span className="px-2 py-1 text-xs rounded bg-blue-500/20 text-blue-400">
-                                ترتیب: {image.order}
-                              </span>
-                            </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="brand-slogan" className="text-[var(--text-black)] font-medium">شعار برند</Label>
+                          <Input
+                            id="brand-slogan"
+                            value={brandForm.slogan}
+                            onChange={(e) => setBrandForm(prev => ({ ...prev, slogan: e.target.value }))}
+                            placeholder="شعار یا توضیح کوتاه برند"
+                            className="border-[var(--light-gray)] focus:border-[var(--primary-red)]"
+                          />
+                        </div>
+                      </div>
+                      <Button 
+                        onClick={() => updateBrandMutation.mutate(brandForm)}
+                        disabled={updateBrandMutation.isPending}
+                        className="w-full bg-[var(--primary-red)] hover:bg-[var(--dark-red)] text-white py-3"
+                      >
+                        <Save className="w-4 h-4 ml-2" />
+                        {updateBrandMutation.isPending ? "در حال ذخیره..." : "ذخیره تنظیمات برند"}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                {/* Images Gallery Tab */}
+                <TabsContent value="images" className="p-6 space-y-6">
+                  <Card className="border-[var(--light-gray)] shadow-sm">
+                    <CardHeader className="bg-gradient-to-r from-[var(--soft-gray)] to-[var(--ice-white)] border-b border-[var(--light-gray)]">
+                      <CardTitle className="flex items-center space-x-reverse space-x-3 text-[var(--text-black)]">
+                        <ImageIcon className="w-5 h-5 text-[var(--primary-red)]" />
+                        <span>مدیریت گالری تصاویر</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6 space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="single-upload" className="text-[var(--text-black)] font-medium">آپلود تصویر تکی</Label>
+                          <div className="mt-2">
+                            <input
+                              id="single-upload"
+                              type="file"
+                              accept="image/*"
+                              onChange={handleFileUpload}
+                              className="hidden"
+                            />
                             <Button
-                              size="sm"
+                              onClick={() => document.getElementById('single-upload')?.click()}
                               variant="outline"
-                              onClick={() => handleEditImage(image)}
-                              className="text-xs"
+                              className="w-full border-[var(--primary-red)] text-[var(--primary-red)] hover:bg-[var(--primary-red)] hover:text-white"
+                              disabled={uploadImageMutation.isPending}
                             >
-                              ویرایش جزئیات
+                              <Upload className="w-4 h-4 ml-2" />
+                              {uploadImageMutation.isPending ? "در حال آپلود..." : "انتخاب تصویر"}
+                            </Button>
+                          </div>
+                        </div>
+                        <div>
+                          <Label htmlFor="bulk-upload" className="text-[var(--text-black)] font-medium">آپلود دسته‌ای</Label>
+                          <div className="mt-2">
+                            <input
+                              id="bulk-upload"
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              onChange={handleBulkUpload}
+                              className="hidden"
+                            />
+                            <Button
+                              onClick={() => document.getElementById('bulk-upload')?.click()}
+                              variant="outline"
+                              className="w-full border-[var(--primary-red)] text-[var(--primary-red)] hover:bg-[var(--primary-red)] hover:text-white"
+                              disabled={bulkUploadMutation.isPending}
+                            >
+                              <Upload className="w-4 h-4 ml-2" />
+                              {bulkUploadMutation.isPending ? "در حال آپلود..." : "آپلود چندین تصویر"}
                             </Button>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                  
-                  {adminImages.length === 0 && (
-                    <div className="text-center py-8 text-gray-500">
-                      هنوز تصویری اضافه نشده است
-                    </div>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Social Media Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle>شبکه‌های اجتماعی</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSocialSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="instagram">اینستاگرام</Label>
-                  <Input
-                    id="instagram"
-                    type="url"
-                    placeholder="https://instagram.com/..."
-                    value={socialForm.instagram}
-                    onChange={(e) => setSocialForm({ ...socialForm, instagram: e.target.value })}
-                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="telegram">تلگرام</Label>
-                  <Input
-                    id="telegram"
-                    type="url"
-                    placeholder="https://t.me/..."
-                    value={socialForm.telegram}
-                    onChange={(e) => setSocialForm({ ...socialForm, telegram: e.target.value })}
-                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="tiktok">تیک تاک</Label>
-                  <Input
-                    id="tiktok"
-                    type="url"
-                    placeholder="https://tiktok.com/..."
-                    value={socialForm.tiktok}
-                    onChange={(e) => setSocialForm({ ...socialForm, tiktok: e.target.value })}
-                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="youtube">یوتیوب</Label>
-                  <Input
-                    id="youtube"
-                    type="url"
-                    placeholder="https://youtube.com/..."
-                    value={socialForm.youtube}
-                    onChange={(e) => setSocialForm({ ...socialForm, youtube: e.target.value })}
-                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                  />
-                </div>
+                      {/* Current Images Display */}
+                      {tshirtImages && tshirtImages.length > 0 && (
+                        <div>
+                          <h3 className="text-lg font-semibold text-[var(--text-black)] mb-4">تصاویر موجود</h3>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {tshirtImages.map((image) => (
+                              <div key={image.id} className="relative group">
+                                <img
+                                  src={image.imageUrl}
+                                  alt={image.title || "تصویر محصول"}
+                                  className="w-full h-32 object-cover rounded-lg border border-[var(--light-gray)]"
+                                />
+                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                                  <Button
+                                    onClick={() => handleEditImage(image)}
+                                    size="sm"
+                                    variant="secondary"
+                                    className="text-xs"
+                                  >
+                                    <Edit3 className="w-3 h-3 ml-1" />
+                                    ویرایش
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
 
-                <Button 
-                  type="submit" 
-                  disabled={updateSocialMutation.isPending}
-                  className="w-full bg-[var(--bold-red)] hover:bg-red-700 text-white"
-                >
-                  {updateSocialMutation.isPending ? "در حال ذخیره..." : "ذخیره لینک‌ها"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+                {/* About Content Tab */}
+                <TabsContent value="about" className="p-6 space-y-6">
+                  <Card className="border-[var(--light-gray)] shadow-sm">
+                    <CardHeader className="bg-gradient-to-r from-[var(--soft-gray)] to-[var(--ice-white)] border-b border-[var(--light-gray)]">
+                      <CardTitle className="flex items-center space-x-reverse space-x-3 text-[var(--text-black)]">
+                        <Info className="w-5 h-5 text-[var(--primary-red)]" />
+                        <span>محتوای صفحه درباره ما</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6 space-y-6">
+                      
+                      {/* Main Content */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="about-title" className="text-[var(--text-black)] font-medium">عنوان اصلی</Label>
+                          <Input
+                            id="about-title"
+                            value={aboutForm.title}
+                            onChange={(e) => setAboutForm(prev => ({ ...prev, title: e.target.value }))}
+                            placeholder="عنوان صفحه درباره ما"
+                            className="border-[var(--light-gray)] focus:border-[var(--primary-red)]"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="about-subtitle" className="text-[var(--text-black)] font-medium">زیرعنوان</Label>
+                          <Input
+                            id="about-subtitle"
+                            value={aboutForm.subtitle}
+                            onChange={(e) => setAboutForm(prev => ({ ...prev, subtitle: e.target.value }))}
+                            placeholder="توضیح کوتاه"
+                            className="border-[var(--light-gray)] focus:border-[var(--primary-red)]"
+                          />
+                        </div>
+                      </div>
 
-          {/* Copyright Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle>تنظیمات کپی‌رایت</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleCopyrightSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="copyrightText">متن کپی‌رایت</Label>
-                  <Textarea
-                    id="copyrightText"
-                    rows={3}
-                    placeholder="© ۱۴۰۳ تک پوش خاص. تمامی حقوق محفوظ است."
-                    value={copyrightForm.text}
-                    onChange={(e) => setCopyrightForm({ text: e.target.value })}
-                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                  />
-                </div>
+                      {/* Philosophy Section */}
+                      <Separator className="my-6" />
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-[var(--text-black)] flex items-center">
+                          <Type className="w-4 h-4 ml-2 text-[var(--primary-red)]" />
+                          بخش فلسفه و رویکرد
+                        </h3>
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="philosophy-title" className="text-[var(--text-black)] font-medium">عنوان فلسفه</Label>
+                            <Input
+                              id="philosophy-title"
+                              value={aboutForm.philosophyTitle}
+                              onChange={(e) => setAboutForm(prev => ({ ...prev, philosophyTitle: e.target.value }))}
+                              placeholder="عنوان بخش فلسفه برند"
+                              className="border-[var(--light-gray)] focus:border-[var(--primary-red)]"
+                            />
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="philosophy-text1" className="text-[var(--text-black)] font-medium">متن فلسفه - بخش اول</Label>
+                              <Textarea
+                                id="philosophy-text1"
+                                value={aboutForm.philosophyText1}
+                                onChange={(e) => setAboutForm(prev => ({ ...prev, philosophyText1: e.target.value }))}
+                                placeholder="متن توضیحی فلسفه برند..."
+                                rows={4}
+                                className="border-[var(--light-gray)] focus:border-[var(--primary-red)]"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="philosophy-text2" className="text-[var(--text-black)] font-medium">متن فلسفه - بخش دوم</Label>
+                              <Textarea
+                                id="philosophy-text2"
+                                value={aboutForm.philosophyText2}
+                                onChange={(e) => setAboutForm(prev => ({ ...prev, philosophyText2: e.target.value }))}
+                                placeholder="ادامه متن فلسفه برند..."
+                                rows={4}
+                                className="border-[var(--light-gray)] focus:border-[var(--primary-red)]"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
 
-                <Button 
-                  type="submit" 
-                  disabled={updateCopyrightMutation.isPending}
-                  className="w-full bg-[var(--bold-red)] hover:bg-red-700 text-white"
-                >
-                  {updateCopyrightMutation.isPending ? "در حال ذخیره..." : "ذخیره تغییرات"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+                      {/* Contact Information Section */}
+                      <Separator className="my-6" />
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-[var(--text-black)] flex items-center">
+                          <Phone className="w-4 h-4 ml-2 text-[var(--primary-red)]" />
+                          اطلاعات تماس
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="contact-title" className="text-[var(--text-black)] font-medium">عنوان بخش تماس</Label>
+                              <Input
+                                id="contact-title"
+                                value={aboutForm.contactTitle}
+                                onChange={(e) => setAboutForm(prev => ({ ...prev, contactTitle: e.target.value }))}
+                                placeholder="عنوان بخش اطلاعات تماس"
+                                className="border-[var(--light-gray)] focus:border-[var(--primary-red)]"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="contact-email" className="text-[var(--text-black)] font-medium flex items-center">
+                                <Mail className="w-4 h-4 ml-1" />
+                                ایمیل تماس
+                              </Label>
+                              <Input
+                                id="contact-email"
+                                type="email"
+                                value={aboutForm.contactEmail}
+                                onChange={(e) => setAboutForm(prev => ({ ...prev, contactEmail: e.target.value }))}
+                                placeholder="email@example.com"
+                                className="border-[var(--light-gray)] focus:border-[var(--primary-red)]"
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="contact-phone" className="text-[var(--text-black)] font-medium flex items-center">
+                                <Phone className="w-4 h-4 ml-1" />
+                                شماره تماس
+                              </Label>
+                              <Input
+                                id="contact-phone"
+                                value={aboutForm.contactPhone}
+                                onChange={(e) => setAboutForm(prev => ({ ...prev, contactPhone: e.target.value }))}
+                                placeholder="شماره تلفن یا موبایل"
+                                className="border-[var(--light-gray)] focus:border-[var(--primary-red)]"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="contact-address" className="text-[var(--text-black)] font-medium flex items-center">
+                                <MapPin className="w-4 h-4 ml-1" />
+                                آدرس
+                              </Label>
+                              <Textarea
+                                id="contact-address"
+                                value={aboutForm.contactAddress}
+                                onChange={(e) => setAboutForm(prev => ({ ...prev, contactAddress: e.target.value }))}
+                                placeholder="آدرس کامل محل کسب و کار"
+                                rows={3}
+                                className="border-[var(--light-gray)] focus:border-[var(--primary-red)]"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
 
-          {/* About Content Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle>محتوای درباره ما</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleAboutSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="aboutTitle">عنوان اصلی</Label>
-                    <Input
-                      id="aboutTitle"
-                      placeholder="درباره تک پوش خاص"
-                      value={aboutForm.title}
-                      onChange={(e) => setAboutForm({ ...aboutForm, title: e.target.value })}
-                      className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="aboutSubtitle">زیرعنوان</Label>
-                    <Input
-                      id="aboutSubtitle"
-                      placeholder="ما برندی هستیم که در خلق پوشاک منحصر به فرد تخصص داریم"
-                      value={aboutForm.subtitle}
-                      onChange={(e) => setAboutForm({ ...aboutForm, subtitle: e.target.value })}
-                      className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                    />
-                  </div>
-                </div>
+                      <Button 
+                        onClick={() => updateAboutMutation.mutate(aboutForm)}
+                        disabled={updateAboutMutation.isPending}
+                        className="w-full bg-[var(--primary-red)] hover:bg-[var(--dark-red)] text-white py-3"
+                      >
+                        <Save className="w-4 h-4 ml-2" />
+                        {updateAboutMutation.isPending ? "در حال ذخیره..." : "ذخیره محتوای درباره ما"}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
 
-                <div>
-                  <Label htmlFor="philosophyTitle">عنوان فلسفه</Label>
-                  <Input
-                    id="philosophyTitle"
-                    placeholder="فلسفه ما"
-                    value={aboutForm.philosophyTitle}
-                    onChange={(e) => setAboutForm({ ...aboutForm, philosophyTitle: e.target.value })}
-                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                  />
-                </div>
+                {/* Social Networks Tab */}
+                <TabsContent value="social" className="p-6 space-y-6">
+                  <Card className="border-[var(--light-gray)] shadow-sm">
+                    <CardHeader className="bg-gradient-to-r from-[var(--soft-gray)] to-[var(--ice-white)] border-b border-[var(--light-gray)]">
+                      <CardTitle className="flex items-center space-x-reverse space-x-3 text-[var(--text-black)]">
+                        <Share2 className="w-5 h-5 text-[var(--primary-red)]" />
+                        <span>لینک‌های شبکه‌های اجتماعی</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6 space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="instagram" className="text-[var(--text-black)] font-medium">اینستاگرام</Label>
+                          <Input
+                            id="instagram"
+                            value={socialForm.instagram}
+                            onChange={(e) => setSocialForm(prev => ({ ...prev, instagram: e.target.value }))}
+                            placeholder="https://instagram.com/username"
+                            className="border-[var(--light-gray)] focus:border-[var(--primary-red)]"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="telegram" className="text-[var(--text-black)] font-medium">تلگرام</Label>
+                          <Input
+                            id="telegram"
+                            value={socialForm.telegram}
+                            onChange={(e) => setSocialForm(prev => ({ ...prev, telegram: e.target.value }))}
+                            placeholder="https://t.me/username"
+                            className="border-[var(--light-gray)] focus:border-[var(--primary-red)]"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="tiktok" className="text-[var(--text-black)] font-medium">تیک‌تاک</Label>
+                          <Input
+                            id="tiktok"
+                            value={socialForm.tiktok}
+                            onChange={(e) => setSocialForm(prev => ({ ...prev, tiktok: e.target.value }))}
+                            placeholder="https://tiktok.com/@username"
+                            className="border-[var(--light-gray)] focus:border-[var(--primary-red)]"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="youtube" className="text-[var(--text-black)] font-medium">یوتیوب</Label>
+                          <Input
+                            id="youtube"
+                            value={socialForm.youtube}
+                            onChange={(e) => setSocialForm(prev => ({ ...prev, youtube: e.target.value }))}
+                            placeholder="https://youtube.com/@username"
+                            className="border-[var(--light-gray)] focus:border-[var(--primary-red)]"
+                          />
+                        </div>
+                      </div>
+                      <Button 
+                        onClick={() => {
+                          // Handle social links update
+                          const socialData = Object.entries(socialForm)
+                            .filter(([_, url]) => url.trim() !== "")
+                            .map(([platform, url]) => ({ platform, url }));
+                          // Add mutation for social links
+                        }}
+                        className="w-full bg-[var(--primary-red)] hover:bg-[var(--dark-red)] text-white py-3"
+                      >
+                        <Save className="w-4 h-4 ml-2" />
+                        ذخیره لینک‌های اجتماعی
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
 
-                <div>
-                  <Label htmlFor="philosophyText1">متن فلسفه - بخش اول</Label>
-                  <Textarea
-                    id="philosophyText1"
-                    rows={3}
-                    placeholder="در تک پوش خاص، ما معتقدیم که هر فرد منحصر به فرد است..."
-                    value={aboutForm.philosophyText1}
-                    onChange={(e) => setAboutForm({ ...aboutForm, philosophyText1: e.target.value })}
-                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                  />
-                </div>
+                {/* Copyright Tab */}
+                <TabsContent value="copyright" className="p-6 space-y-6">
+                  <Card className="border-[var(--light-gray)] shadow-sm">
+                    <CardHeader className="bg-gradient-to-r from-[var(--soft-gray)] to-[var(--ice-white)] border-b border-[var(--light-gray)]">
+                      <CardTitle className="flex items-center space-x-reverse space-x-3 text-[var(--text-black)]">
+                        <Copyright className="w-5 h-5 text-[var(--primary-red)]" />
+                        <span>تنظیمات کپی‌رایت</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6 space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="copyright-text" className="text-[var(--text-black)] font-medium">متن کپی‌رایت</Label>
+                        <Textarea
+                          id="copyright-text"
+                          value={copyrightForm.text}
+                          onChange={(e) => setCopyrightForm(prev => ({ ...prev, text: e.target.value }))}
+                          placeholder="© 2024 نام برند شما. تمام حقوق محفوظ است."
+                          rows={3}
+                          className="border-[var(--light-gray)] focus:border-[var(--primary-red)]"
+                        />
+                      </div>
+                      <Button 
+                        onClick={() => updateCopyrightMutation.mutate(copyrightForm)}
+                        disabled={updateCopyrightMutation.isPending}
+                        className="w-full bg-[var(--primary-red)] hover:bg-[var(--dark-red)] text-white py-3"
+                      >
+                        <Save className="w-4 h-4 ml-2" />
+                        {updateCopyrightMutation.isPending ? "در حال ذخیره..." : "ذخیره تنظیمات کپی‌رایت"}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
 
-                <div>
-                  <Label htmlFor="philosophyText2">متن فلسفه - بخش دوم</Label>
-                  <Textarea
-                    id="philosophyText2"
-                    rows={3}
-                    placeholder="شعار ما یک از یک نشان‌دهنده تعهد ما به ارائه محصولاتی است..."
-                    value={aboutForm.philosophyText2}
-                    onChange={(e) => setAboutForm({ ...aboutForm, philosophyText2: e.target.value })}
-                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="contactTitle">عنوان تماس</Label>
-                  <Input
-                    id="contactTitle"
-                    placeholder="تماس با ما"
-                    value={aboutForm.contactTitle}
-                    onChange={(e) => setAboutForm({ ...aboutForm, contactTitle: e.target.value })}
-                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <Label htmlFor="contactEmail">ایمیل</Label>
-                    <Input
-                      id="contactEmail"
-                      type="email"
-                      placeholder="info@tekpooshkhaas.com"
-                      value={aboutForm.contactEmail}
-                      onChange={(e) => setAboutForm({ ...aboutForm, contactEmail: e.target.value })}
-                      className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="contactPhone">تلفن</Label>
-                    <Input
-                      id="contactPhone"
-                      placeholder="۰۹۱۲۳۴۵۶۷۸۹"
-                      value={aboutForm.contactPhone}
-                      onChange={(e) => setAboutForm({ ...aboutForm, contactPhone: e.target.value })}
-                      className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="contactAddress">آدرس</Label>
-                    <Input
-                      id="contactAddress"
-                      placeholder="تهران، ایران"
-                      value={aboutForm.contactAddress}
-                      onChange={(e) => setAboutForm({ ...aboutForm, contactAddress: e.target.value })}
-                      className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                    />
-                  </div>
-                </div>
-
-                <Button 
-                  type="submit" 
-                  disabled={updateAboutMutation.isPending}
-                  className="w-full bg-[var(--bold-red)] hover:bg-red-700 text-white"
-                >
-                  {updateAboutMutation.isPending ? "در حال ذخیره..." : "ذخیره تغییرات"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+              </ScrollArea>
+            </Tabs>
+          </div>
         </div>
-      </DialogContent>
-      
-      {/* Image Details Edit Modal */}
-      <Dialog open={!!editingImage} onOpenChange={() => setEditingImage(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>ویرایش جزئیات تصویر</DialogTitle>
-          </DialogHeader>
-          
-          {editingImage && (
+      </div>
+
+      {/* Image Edit Dialog */}
+      {editingImage && (
+        <Dialog open={!!editingImage} onOpenChange={() => setEditingImage(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>ویرایش اطلاعات تصویر</DialogTitle>
+            </DialogHeader>
             <div className="space-y-4">
-              <div className="text-center">
-                <img 
-                  src={editingImage.imageUrl} 
-                  alt={editingImage.alt}
-                  className="w-full h-40 object-cover rounded-md"
-                />
-              </div>
-              
-              <form onSubmit={handleImageDetailsSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="imageTitle">عنوان</Label>
-                  <Input
-                    id="imageTitle"
-                    placeholder="عنوان تصویر"
-                    value={imageForm.title}
-                    onChange={(e) => setImageForm({ ...imageForm, title: e.target.value })}
-                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="imageDescription">توضیحات</Label>
-                  <Textarea
-                    id="imageDescription"
-                    placeholder="توضیحات تصویر"
-                    value={imageForm.description}
-                    onChange={(e) => setImageForm({ ...imageForm, description: e.target.value })}
-                    className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                    rows={3}
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="imageSize">سایز</Label>
-                    <Input
-                      id="imageSize"
-                      placeholder="مثال: S, M, L, XL"
-                      value={imageForm.size}
-                      onChange={(e) => setImageForm({ ...imageForm, size: e.target.value })}
-                      className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="imagePrice">قیمت</Label>
-                    <Input
-                      id="imagePrice"
-                      placeholder="مثال: ۲۵۰,۰۰۰ تومان"
-                      value={imageForm.price}
-                      onChange={(e) => setImageForm({ ...imageForm, price: e.target.value })}
-                      className="focus:ring-[var(--bold-red)] focus:border-[var(--bold-red)]"
-                    />
-                  </div>
-                </div>
-                
-                <div className="flex gap-2 pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setEditingImage(null)}
-                    className="flex-1"
-                  >
-                    انصراف
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={updateImageDetailsMutation.isPending}
-                    className="flex-1 bg-[var(--bold-red)] hover:bg-red-700 text-white"
-                  >
-                    {updateImageDetailsMutation.isPending ? "در حال ذخیره..." : "ذخیره تغییرات"}
-                  </Button>
-                </div>
-              </form>
+              <img
+                src={editingImage.imageUrl}
+                alt={editingImage.title || "تصویر محصول"}
+                className="w-full h-48 object-cover rounded-lg"
+              />
+              {/* Add edit form fields here */}
+              <Button onClick={() => setEditingImage(null)}>بستن</Button>
             </div>
-          )}
-        </DialogContent>
-      </Dialog>
-    </Dialog>
+          </DialogContent>
+        </Dialog>
+      )}
+    </div>
   );
 }

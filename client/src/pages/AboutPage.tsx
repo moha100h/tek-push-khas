@@ -68,25 +68,12 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
                   </h3>
                   
                   <div className="space-y-4 text-lg text-[var(--text-gray)] leading-relaxed">
-                    {aboutContent?.content ? (
-                      aboutContent.content.split('\n').map((paragraph, index) => (
-                        <p key={index} className="leading-relaxed">
-                          {paragraph}
-                        </p>
-                      ))
-                    ) : (
-                      <>
-                        <p>
-                          تک پوش خاص متولد شد از عشق به هنر و طراحی. ما باور داریم که هر فرد منحصر به فرد است و لباسش باید این تمایز را نشان دهد.
-                        </p>
-                        <p>
-                          هر طراحی ما داستانی دارد، هر رنگ معنایی، و هر خط احساسی. ما فقط تی‌شرت نمی‌سازیم، بلکه هویتی خلق می‌کنیم که شما با آن همراه می‌شوید.
-                        </p>
-                        <p>
-                          کیفیت برای ما اولویت است. از انتخاب بهترین پارچه‌ها تا دقت در چاپ، هر مرحله با عشق و دقت انجام می‌شود.
-                        </p>
-                      </>
-                    )}
+                    <p>
+                      {aboutContent?.philosophyText1 || "تک پوش خاص متولد شد از عشق به هنر و طراحی. ما باور داریم که هر فرد منحصر به فرد است و لباسش باید این تمایز را نشان دهد."}
+                    </p>
+                    <p>
+                      {aboutContent?.philosophyText2 || "هر طراحی ما داستانی دارد، هر رنگ معنایی، و هر خط احساسی. ما فقط تی‌شرت نمی‌سازیم، بلکه هویتی خلق می‌کنیم که شما با آن همراه می‌شوید."}
+                    </p>
                   </div>
                 </div>
 
@@ -97,7 +84,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
                     مأموریت ما
                   </h4>
                   <p className="text-[var(--text-gray)] leading-relaxed">
-                    {aboutContent?.mission || "خلق طراحی‌های منحصر به فرد که شخصیت شما را بیان کند و سبک شما را متمایز سازد."}
+                    {aboutContent?.philosophyTitle || "خلق طراحی‌های منحصر به فرد که شخصیت شما را بیان کند و سبک شما را متمایز سازد."}
                   </p>
                 </div>
               </div>
