@@ -27,8 +27,8 @@ export default function ModernFooter() {
 
   return (
     <footer className="bg-[var(--ice-white)] border-t border-[var(--medium-gray)] mt-20">
-      {/* Top Neon Separator */}
-      <div className="neon-separator"></div>
+      {/* Top Separator */}
+      <div className="red-separator"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center space-y-8">

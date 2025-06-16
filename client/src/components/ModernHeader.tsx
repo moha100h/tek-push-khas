@@ -147,7 +147,7 @@ export default function ModernHeader({ onNavigate, currentSection }: ModernHeade
                 onClick={() => onNavigate('home')}
                 className={`relative px-6 py-3 font-medium rounded-xl transition-all duration-300 ${
                   currentSection === 'home' 
-                    ? 'text-[var(--primary-red)] bg-[var(--light-red)] neon-text' 
+                    ? 'text-[var(--primary-red)] bg-[var(--light-red)]' 
                     : 'text-[var(--text-black)] hover:text-[var(--primary-red)] hover:bg-[var(--light-gray)]'
                 }`}
               >
@@ -161,7 +161,7 @@ export default function ModernHeader({ onNavigate, currentSection }: ModernHeade
                 onClick={() => onNavigate('about')}
                 className={`relative px-6 py-3 font-medium rounded-xl transition-all duration-300 ${
                   currentSection === 'about' 
-                    ? 'text-[var(--primary-red)] bg-[var(--light-red)] neon-text' 
+                    ? 'text-[var(--primary-red)] bg-[var(--light-red)]' 
                     : 'text-[var(--text-black)] hover:text-[var(--primary-red)] hover:bg-[var(--light-gray)]'
                 }`}
               >
@@ -192,7 +192,7 @@ export default function ModernHeader({ onNavigate, currentSection }: ModernHeade
           {/* Mobile Navigation */}
           {isMobileMenuOpen && (
             <div className="md:hidden pb-4 border-t border-[var(--medium-gray)] slide-up">
-              <div className="neon-separator mb-4"></div>
+              <div className="red-separator mb-4"></div>
               <div className="flex flex-col space-y-2">
                 <button
                   onClick={() => {
@@ -201,7 +201,7 @@ export default function ModernHeader({ onNavigate, currentSection }: ModernHeade
                   }}
                   className={`text-right px-4 py-3 font-medium rounded-xl transition-colors ${
                     currentSection === 'home' 
-                      ? 'text-[var(--primary-red)] bg-[var(--light-red)] neon-text' 
+                      ? 'text-[var(--primary-red)] bg-[var(--light-red)]' 
                       : 'text-[var(--text-black)] hover:bg-[var(--light-gray)]'
                   }`}
                 >
@@ -215,7 +215,7 @@ export default function ModernHeader({ onNavigate, currentSection }: ModernHeade
                   }}
                   className={`text-right px-4 py-3 font-medium rounded-xl transition-colors ${
                     currentSection === 'about' 
-                      ? 'text-[var(--primary-red)] bg-[var(--light-red)] neon-text' 
+                      ? 'text-[var(--primary-red)] bg-[var(--light-red)]' 
                       : 'text-[var(--text-black)] hover:bg-[var(--light-gray)]'
                   }`}
                 >
@@ -223,7 +223,7 @@ export default function ModernHeader({ onNavigate, currentSection }: ModernHeade
                 </button>
                 
                 <div className="px-4 pt-4 border-t border-[var(--medium-gray)]">
-                  <div className="neon-separator mb-4"></div>
+                  <div className="red-separator mb-4"></div>
                   <AuthControls onShowAdmin={() => {
                     setShowAdminPanel(true);
                     setIsMobileMenuOpen(false);
@@ -234,8 +234,8 @@ export default function ModernHeader({ onNavigate, currentSection }: ModernHeade
           )}
         </div>
         
-        {/* Bottom Neon Separator */}
-        <div className="neon-separator"></div>
+        {/* Bottom Separator */}
+        <div className="red-separator"></div>
       </header>
 
       {/* Admin Panel Modal */}
