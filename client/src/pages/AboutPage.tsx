@@ -200,6 +200,52 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
           </div>
         </section>
 
+        {/* Contact Information Section */}
+        {aboutContent && (aboutContent.contactEmail || aboutContent.contactPhone || aboutContent.contactAddress) && (
+          <section className="py-20 bg-gradient-to-b from-[var(--ice-white)] to-[var(--soft-gray)]">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-16 fade-in">
+                <h2 className="text-4xl md:text-5xl font-bold text-[var(--text-black)] mb-6">
+                  {aboutContent.contactTitle || "تماس با ما"}
+                </h2>
+                <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[var(--primary-red)] to-transparent mx-auto"></div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {aboutContent.contactEmail && (
+                  <div className="text-center space-y-4 slide-up">
+                    <div className="w-16 h-16 mx-auto bg-gradient-to-br from-[var(--primary-red)] to-[var(--dark-red)] rounded-2xl flex items-center justify-center shadow-lg">
+                      <Mail className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-[var(--text-black)]">ایمیل</h3>
+                    <p className="text-[var(--text-gray)]" dir="ltr">{aboutContent.contactEmail}</p>
+                  </div>
+                )}
+
+                {aboutContent.contactPhone && (
+                  <div className="text-center space-y-4 scale-in">
+                    <div className="w-16 h-16 mx-auto bg-gradient-to-br from-[var(--primary-red)] to-[var(--dark-red)] rounded-2xl flex items-center justify-center shadow-lg">
+                      <Phone className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-[var(--text-black)]">تلفن تماس</h3>
+                    <p className="text-[var(--text-gray)]" dir="ltr">{aboutContent.contactPhone}</p>
+                  </div>
+                )}
+
+                {aboutContent.contactAddress && (
+                  <div className="text-center space-y-4 fade-in">
+                    <div className="w-16 h-16 mx-auto bg-gradient-to-br from-[var(--primary-red)] to-[var(--dark-red)] rounded-2xl flex items-center justify-center shadow-lg">
+                      <MapPin className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-[var(--text-black)]">آدرس</h3>
+                    <p className="text-[var(--text-gray)] leading-relaxed">{aboutContent.contactAddress}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* CTA Section */}
         <section className="py-20 bg-gradient-to-b from-[var(--soft-gray)] to-[var(--ice-white)]">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
