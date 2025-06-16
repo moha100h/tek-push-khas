@@ -4,6 +4,7 @@ import { BrandSettings } from "@shared/schema";
 import { Menu, X, User, LogOut, Settings, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import AdminPanel from "@/components/AdminPanel";
 
 interface AuthControlsProps {
   onShowAdmin: () => void;
@@ -240,9 +241,7 @@ export default function ModernHeader({ onNavigate, currentSection }: ModernHeade
 
       {/* Admin Panel Modal */}
       {showAdminPanel && (
-        <div className="fixed inset-0 z-50">
-          {/* Will be implemented separately */}
-        </div>
+        <AdminPanel onClose={() => setShowAdminPanel(false)} />
       )}
     </>
   );
