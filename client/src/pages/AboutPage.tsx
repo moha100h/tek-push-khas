@@ -38,7 +38,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
               <div className="fade-in">
                 <h1 className="text-5xl md:text-6xl font-bold text-[var(--text-black)] leading-tight">
                   درباره{" "}
-                  <span className="neon-text text-gradient">
+                  <span className="red-text text-gradient">
                     تک پوش خاص
                   </span>
                 </h1>
@@ -188,25 +188,25 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
               
               {/* Stat 1 */}
               <div className="text-center space-y-3 fade-in">
-                <div className="text-3xl md:text-4xl font-bold neon-text">100+</div>
+                <div className="text-3xl md:text-4xl font-bold red-text">100+</div>
                 <p className="text-[var(--text-gray)]">طراحی منحصر به فرد</p>
               </div>
 
               {/* Stat 2 */}
               <div className="text-center space-y-3 slide-up">
-                <div className="text-3xl md:text-4xl font-bold neon-text">500+</div>
+                <div className="text-3xl md:text-4xl font-bold red-text">500+</div>
                 <p className="text-[var(--text-gray)]">مشتری راضی</p>
               </div>
 
               {/* Stat 3 */}
               <div className="text-center space-y-3 scale-in">
-                <div className="text-3xl md:text-4xl font-bold neon-text">2+</div>
+                <div className="text-3xl md:text-4xl font-bold red-text">2+</div>
                 <p className="text-[var(--text-gray)]">سال تجربه</p>
               </div>
 
               {/* Stat 4 */}
               <div className="text-center space-y-3 fade-in">
-                <div className="text-3xl md:text-4xl font-bold neon-text">99%</div>
+                <div className="text-3xl md:text-4xl font-bold red-text">99%</div>
                 <p className="text-[var(--text-gray)]">رضایت مشتریان</p>
               </div>
             </div>
@@ -218,7 +218,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
             <div className="fade-in">
               <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-black)] mb-6">
-                آماده برای تجربه <span className="neon-text">تک پوش خاص</span>؟
+                آماده برای تجربه <span className="red-text">تک پوش خاص</span>؟
               </h2>
               <p className="text-lg text-[var(--text-gray)] mb-8">
                 مجموعه منحصر به فرد ما را کشف کنید و سبک خود را پیدا کنید
