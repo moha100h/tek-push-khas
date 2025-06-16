@@ -129,10 +129,15 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
   });
 
   const uploadImageMutation = useMutation({
-    mutationFn: async (file: File) => {
-      const formData = new FormData();
-      formData.append("image", file);
-      const res = await apiRequest("POST", "/api/upload-image", formData);
+    mutationFn: async (data: File | FormData) => {
+      let formData: FormData;
+      if (data instanceof FormData) {
+        formData = data;
+      } else {
+        formData = new FormData();
+        formData.append("image", data);
+      }
+      const res = await apiRequest("POST", "/api/admin/upload-image", formData);
       return await res.json();
     },
     onSuccess: () => {
@@ -157,7 +162,7 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
       Array.from(files).forEach((file) => {
         formData.append("images", file);
       });
-      const res = await apiRequest("POST", "/api/upload-images", formData);
+      const res = await apiRequest("POST", "/api/admin/upload-images", formData);
       return await res.json();
     },
     onSuccess: () => {
@@ -270,6 +275,28 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
 
   const handleEditImage = (image: TshirtImage) => {
     setEditingImage(image);
+  };
+
+  const handleDetailedUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('title', imageForm.title);
+      formData.append('description', imageForm.description);
+      formData.append('size', imageForm.size);
+      formData.append('price', imageForm.price);
+      
+      uploadImageMutation.mutate(formData as any);
+      
+      // Reset form
+      setImageForm({
+        title: "",
+        description: "",
+        size: "",
+        price: "",
+      });
+    }
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {

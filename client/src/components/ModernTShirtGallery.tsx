@@ -166,43 +166,45 @@ export default function ModernTShirtGallery() {
 
   return (
     <>
-      {/* Gallery Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 p-8">
-        {tshirtImages.map((tshirt, index) => (
-          <div
-            key={tshirt.id}
-            className="modern-card group cursor-pointer overflow-hidden"
-            onClick={() => openProductDetail(tshirt)}
-            style={{ 
-              animationDelay: `${index * 100}ms` 
-            }}
-          >
-            
-            {/* Image Container */}
-            <div className="relative overflow-hidden rounded-t-2xl bg-[var(--light-gray)] h-64">
-              <img
-                src={tshirt.imageUrl}
-                alt={tshirt.title || tshirt.alt}
-                className="w-full h-full object-contain tshirt-image transition-transform duration-500 group-hover:scale-110"
-              />
+      {/* Optimized Mobile-First Gallery Grid */}
+      <div className="responsive-container py-4 md:py-8">
+        <div className="responsive-grid-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
+          {tshirtImages.map((tshirt, index) => (
+            <div
+              key={tshirt.id}
+              className="modern-card group cursor-pointer overflow-hidden hover:scale-105 transition-all duration-500"
+              onClick={() => openProductDetail(tshirt)}
+              style={{ 
+                animationDelay: `${index * 100}ms` 
+              }}
+            >
               
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              
-              {/* Zoom Icon */}
-              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                <div className="p-2 bg-[var(--pure-white)]/90 backdrop-blur-sm rounded-full border border-[var(--medium-gray)]">
-                  <ZoomIn className="w-4 h-4 text-[var(--primary-red)]" />
+              {/* Mobile-Optimized Image Container */}
+              <div className="relative overflow-hidden rounded-t-2xl bg-[var(--light-gray)] h-44 sm:h-52 md:h-60 lg:h-64">
+                <img
+                  src={tshirt.imageUrl}
+                  alt={tshirt.title || tshirt.alt}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  loading={index < 4 ? "eager" : "lazy"}
+                />
+                
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                
+                {/* Mobile-Friendly Zoom Icon */}
+                <div className="absolute top-2 right-2 md:top-4 md:right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                  <div className="p-1.5 md:p-2 bg-[var(--pure-white)]/90 backdrop-blur-sm rounded-full border border-[var(--medium-gray)]">
+                    <ZoomIn className="w-3 h-3 md:w-4 md:h-4 text-[var(--primary-red)]" />
+                  </div>
+                </div>
+
+                {/* Mobile-Optimized Premium Badge */}
+                <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                  <Badge className="bg-[var(--primary-red)]/90 text-white border-0 backdrop-blur-sm">
+                    پریمیوم
+                  </Badge>
                 </div>
               </div>
-
-              {/* Premium Badge */}
-              <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                <Badge className="bg-[var(--primary-red)]/90 text-white border-0 backdrop-blur-sm">
-                  پریمیوم
-                </Badge>
-              </div>
-            </div>
             
             {/* Content */}
             <div className="p-6 space-y-4">
@@ -242,17 +244,18 @@ export default function ModernTShirtGallery() {
               </div>
             </div>
           </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      {/* Product Detail Modal */}
-      {selectedProduct && (
-        <ProductDetailModal
-          product={selectedProduct}
-          isOpen={!!selectedProduct}
-          onClose={closeProductDetail}
-        />
-      )}
+        {/* Product Detail Modal */}
+        {selectedProduct && (
+          <ProductDetailModal
+            product={selectedProduct}
+            isOpen={!!selectedProduct}
+            onClose={closeProductDetail}
+          />
+        )}
+      </div>
     </>
   );
 }
