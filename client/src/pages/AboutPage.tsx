@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AboutContent } from "@shared/schema";
 import ModernHeader from "@/components/ModernHeader";
 import ModernFooter from "@/components/ModernFooter";
-import { Heart, Star, Users, Award } from "lucide-react";
+import { Heart, Star, Users, Award, Mail, Phone, MapPin } from "lucide-react";
 
 interface AboutPageProps {
   onNavigate: (section: 'home' | 'about') => void;
