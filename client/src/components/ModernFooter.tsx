@@ -35,7 +35,7 @@ export default function ModernFooter() {
           
           {/* Brand Section */}
           <div className="space-y-4 fade-in">
-            <h3 className="text-2xl font-bold text-[var(--text-black)] neon-text">
+            <h3 className="text-2xl font-bold red-text">
               تک پوش خاص
             </h3>
             <p className="text-[var(--text-gray)] max-w-md mx-auto leading-relaxed">
@@ -69,7 +69,7 @@ export default function ModernFooter() {
 
           {/* Divider */}
           <div className="max-w-xs mx-auto">
-            <div className="neon-separator"></div>
+            <div className="red-separator"></div>
           </div>
 
           {/* Copyright & Credits */}
@@ -96,8 +96,8 @@ export default function ModernFooter() {
         </div>
       </div>
       
-      {/* Bottom Neon Separator */}
-      <div className="neon-separator"></div>
+      {/* Bottom Separator */}
+      <div className="red-separator"></div>
     </footer>
   );
 }

@@ -78,7 +78,7 @@ export default function HomePage() {
               <div className="space-y-6 slide-up">
                 <h1 className="text-5xl md:text-7xl font-bold text-[var(--text-black)] leading-tight">
                   <span className="block">تک پوش</span>
-                  <span className="block neon-text text-gradient">
+                  <span className="block red-text text-gradient">
                     {brandSettings?.name || "خاص"}
                   </span>
                 </h1>
@@ -120,7 +120,7 @@ export default function HomePage() {
             <div className="text-center space-y-6">
               <div className="fade-in">
                 <h2 className="text-4xl md:text-5xl font-bold text-[var(--text-black)]">
-                  مجموعه <span className="neon-text">محصولات</span>
+                  مجموعه <span className="red-text">محصولات</span>
                 </h2>
                 <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[var(--primary-red)] to-transparent mx-auto mt-4"></div>
               </div>

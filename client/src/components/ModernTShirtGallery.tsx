@@ -53,10 +53,10 @@ function ProductDetailModal({ product, isOpen, onClose }: ProductDetailModalProp
               
               {/* Header */}
               <div className="space-y-4">
-                <h3 className="text-3xl font-bold text-[var(--text-black)] neon-text leading-tight">
+                <h3 className="text-3xl font-bold red-text leading-tight">
                   {product.title || product.alt}
                 </h3>
-                <Badge className="bg-[var(--primary-red)]/20 text-[var(--primary-red)] border-[var(--primary-red)]/30 neon-border px-4 py-2 text-sm font-medium">
+                <Badge className="bg-[var(--primary-red)]/20 text-[var(--primary-red)] border-[var(--primary-red)]/30 red-border px-4 py-2 text-sm font-medium">
                   تک پوش خاص
                 </Badge>
               </div>
@@ -78,7 +78,7 @@ function ProductDetailModal({ product, isOpen, onClose }: ProductDetailModalProp
                 <div className="space-y-3">
                   <span className="text-[var(--text-gray)] text-sm font-medium">قیمت:</span>
                   <div className="flex items-center space-x-reverse space-x-2">
-                    <span className="text-2xl font-bold text-[var(--primary-red)] neon-text">
+                    <span className="text-2xl font-bold red-text">
                       {product.price}
                     </span>
                     <span className="text-[var(--text-gray)] text-sm">تومان</span>
@@ -87,7 +87,7 @@ function ProductDetailModal({ product, isOpen, onClose }: ProductDetailModalProp
               )}
               
               {/* Separator */}
-              <div className="neon-separator"></div>
+              <div className="red-separator"></div>
               
               {/* Description */}
               <div className="space-y-3">
@@ -221,7 +221,7 @@ export default function ModernTShirtGallery() {
                 )}
                 
                 {tshirt.price && (
-                  <span className="font-bold text-[var(--primary-red)] neon-text">
+                  <span className="font-bold red-text">
                     {tshirt.price} ت
                   </span>
                 )}
