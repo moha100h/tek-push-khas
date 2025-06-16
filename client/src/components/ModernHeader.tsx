@@ -31,18 +31,9 @@ function AuthControls({ onShowAdmin }: AuthControlsProps) {
     }
   };
 
+  // Only show admin controls if user is logged in
   if (!user) {
-    return (
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => window.location.href = "/auth"}
-        className="modern-btn-outline text-sm"
-      >
-        <User className="w-4 h-4 ml-2" />
-        ورود
-      </Button>
-    );
+    return null; // Hide login button completely
   }
 
   return (
@@ -114,8 +105,8 @@ export default function ModernHeader({ onNavigate, currentSection }: ModernHeade
           ? 'header-blur shadow-lg' 
           : 'bg-[var(--ice-white)]'
       }`}>
-        {/* Top Neon Separator */}
-        <div className="neon-separator"></div>
+        {/* Top Separator */}
+        <div className="red-separator"></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
@@ -141,7 +132,7 @@ export default function ModernHeader({ onNavigate, currentSection }: ModernHeade
               </div>
               
               <div className="space-y-1">
-                <h1 className="text-2xl font-bold text-[var(--text-black)] neon-text">
+                <h1 className="text-2xl font-bold red-text">
                   {brandSettings?.name || "تک پوش خاص"}
                 </h1>
                 <p className="text-sm text-[var(--text-gray)] font-medium">
