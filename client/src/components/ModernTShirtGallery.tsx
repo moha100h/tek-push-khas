@@ -26,30 +26,30 @@ function ProductDetailModal({ product, isOpen, onClose }: ProductDetailModalProp
           <X className="w-6 h-6 text-white" />
         </button>
         
-        <div className="grid md:grid-cols-5 gap-0 h-full">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-0 h-full">
           
           {/* Product Image */}
-          <div className="md:col-span-3 relative bg-[var(--light-gray)] flex items-center justify-center min-h-[500px] border-l-2 border-[var(--primary-red)]/30">
+          <div className="md:col-span-3 relative bg-[var(--light-gray)] flex items-center justify-center min-h-[300px] md:min-h-[500px] order-2 md:order-1">
             <img
               src={product.imageUrl}
               alt={product.title || product.alt}
-              className="max-w-full max-h-full object-contain modal-image"
-              style={{ maxHeight: '600px' }}
+              className="w-full h-full object-contain p-4 md:p-8"
+              style={{ maxHeight: '80vh' }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--primary-red)]/5 to-transparent pointer-events-none" />
             
             {/* Quality Badge */}
             <div className="absolute top-4 right-4">
-              <div className="flex items-center space-x-reverse space-x-2 bg-[var(--pure-white)]/90 backdrop-blur-sm px-3 py-2 rounded-full border border-[var(--medium-gray)]">
-                <Star className="w-4 h-4 text-[var(--primary-red)] fill-current" />
-                <span className="text-sm font-medium text-[var(--text-black)]">کیفیت پریمیوم</span>
+              <div className="flex items-center space-x-reverse space-x-2 bg-[var(--pure-white)]/90 backdrop-blur-sm px-2 md:px-3 py-1 md:py-2 rounded-full border border-[var(--medium-gray)]">
+                <Star className="w-3 h-3 md:w-4 md:h-4 text-[var(--primary-red)] fill-current" />
+                <span className="text-xs md:text-sm font-medium text-[var(--text-black)]">کیفیت پریمیوم</span>
               </div>
             </div>
           </div>
           
           {/* Product Details */}
-          <div className="md:col-span-2 p-8 space-y-6 bg-[var(--ice-white)] flex flex-col justify-between">
-            <div className="space-y-6">
+          <div className="md:col-span-2 p-4 md:p-8 space-y-4 md:space-y-6 bg-[var(--ice-white)] flex flex-col justify-between order-1 md:order-2">
+            <div className="space-y-4 md:space-y-6">
               
               {/* Header */}
               <div className="space-y-4">

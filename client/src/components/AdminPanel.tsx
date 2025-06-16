@@ -78,6 +78,12 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
     tiktok: "",
     youtube: "",
   });
+  const [imageForm, setImageForm] = useState({
+    title: "",
+    description: "",
+    size: "",
+    price: "",
+  });
 
   // Data queries
   const { data: brandSettings } = useQuery<BrandSettings>({
@@ -421,48 +427,84 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="single-upload" className="text-[var(--text-black)] font-medium">آپلود تصویر تکی</Label>
-                          <div className="mt-2">
-                            <input
-                              id="single-upload"
-                              type="file"
-                              accept="image/*"
-                              onChange={handleFileUpload}
-                              className="hidden"
-                            />
-                            <Button
-                              onClick={() => document.getElementById('single-upload')?.click()}
-                              variant="outline"
-                              className="w-full border-[var(--primary-red)] text-[var(--primary-red)] hover:bg-[var(--primary-red)] hover:text-white"
-                              disabled={uploadImageMutation.isPending}
-                            >
-                              <Upload className="w-4 h-4 ml-2" />
-                              {uploadImageMutation.isPending ? "در حال آپلود..." : "انتخاب تصویر"}
-                            </Button>
+                      {/* Enhanced Upload Section */}
+                      <div className="bg-[var(--soft-gray)] p-6 rounded-xl border border-[var(--light-gray)]">
+                        <h3 className="text-lg font-semibold text-[var(--text-black)] mb-4">آپلود تصاویر با کیفیت اصلی</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          
+                          {/* Single Upload with Metadata */}
+                          <div className="space-y-4">
+                            <Label className="text-[var(--text-black)] font-medium">آپلود تصویر با اطلاعات کامل</Label>
+                            <div className="space-y-3">
+                              <Input
+                                placeholder="عنوان تصویر"
+                                value={imageForm.title}
+                                onChange={(e) => setImageForm(prev => ({ ...prev, title: e.target.value }))}
+                                className="border-[var(--light-gray)]"
+                              />
+                              <Textarea
+                                placeholder="توضیحات تصویر"
+                                value={imageForm.description}
+                                onChange={(e) => setImageForm(prev => ({ ...prev, description: e.target.value }))}
+                                rows={2}
+                                className="border-[var(--light-gray)]"
+                              />
+                              <div className="grid grid-cols-2 gap-2">
+                                <Input
+                                  placeholder="سایز (مثل: S, M, L)"
+                                  value={imageForm.size}
+                                  onChange={(e) => setImageForm(prev => ({ ...prev, size: e.target.value }))}
+                                  className="border-[var(--light-gray)]"
+                                />
+                                <Input
+                                  placeholder="قیمت"
+                                  value={imageForm.price}
+                                  onChange={(e) => setImageForm(prev => ({ ...prev, price: e.target.value }))}
+                                  className="border-[var(--light-gray)]"
+                                />
+                              </div>
+                              <input
+                                id="single-upload"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleDetailedUpload}
+                                className="hidden"
+                              />
+                              <Button
+                                onClick={() => document.getElementById('single-upload')?.click()}
+                                variant="outline"
+                                className="w-full border-[var(--primary-red)] text-[var(--primary-red)] hover:bg-[var(--primary-red)] hover:text-white"
+                                disabled={uploadImageMutation.isPending}
+                              >
+                                <Upload className="w-4 h-4 ml-2" />
+                                {uploadImageMutation.isPending ? "در حال آپلود..." : "انتخاب و آپلود تصویر"}
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                        <div>
-                          <Label htmlFor="bulk-upload" className="text-[var(--text-black)] font-medium">آپلود دسته‌ای</Label>
-                          <div className="mt-2">
-                            <input
-                              id="bulk-upload"
-                              type="file"
-                              accept="image/*"
-                              multiple
-                              onChange={handleBulkUpload}
-                              className="hidden"
-                            />
-                            <Button
-                              onClick={() => document.getElementById('bulk-upload')?.click()}
-                              variant="outline"
-                              className="w-full border-[var(--primary-red)] text-[var(--primary-red)] hover:bg-[var(--primary-red)] hover:text-white"
-                              disabled={bulkUploadMutation.isPending}
-                            >
-                              <Upload className="w-4 h-4 ml-2" />
-                              {bulkUploadMutation.isPending ? "در حال آپلود..." : "آپلود چندین تصویر"}
-                            </Button>
+
+                          {/* Bulk Upload */}
+                          <div className="space-y-4">
+                            <Label className="text-[var(--text-black)] font-medium">آپلود دسته‌ای (تا 20 تصویر)</Label>
+                            <div className="border-2 border-dashed border-[var(--primary-red)]/30 rounded-xl p-6 text-center hover:border-[var(--primary-red)]/60 transition-colors">
+                              <Upload className="w-12 h-12 mx-auto text-[var(--primary-red)] mb-4" />
+                              <p className="text-[var(--text-gray)] mb-4">کیفیت اصلی حفظ می‌شود</p>
+                              <input
+                                id="bulk-upload"
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleBulkUpload}
+                                className="hidden"
+                              />
+                              <Button
+                                onClick={() => document.getElementById('bulk-upload')?.click()}
+                                variant="outline"
+                                className="border-[var(--primary-red)] text-[var(--primary-red)] hover:bg-[var(--primary-red)] hover:text-white"
+                                disabled={bulkUploadMutation.isPending}
+                              >
+                                {bulkUploadMutation.isPending ? "در حال آپلود..." : "انتخاب چندین تصویر"}
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </div>

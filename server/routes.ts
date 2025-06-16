@@ -145,8 +145,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Upload t-shirt images
-  app.post('/api/admin/upload-tshirt-images', requireAdmin, upload.array('images', 10), async (req, res) => {
+  // Upload single t-shirt image with metadata
+  app.post('/api/admin/upload-image', requireAdmin, upload.single('image'), async (req, res) => {
+    try {
+      const file = req.file as Express.Multer.File;
+      if (!file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const { title, description, size, price } = req.body;
+      const uploadsDir = await ensureUploadsDir();
+      
+      const filename = `tshirt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.jpg`;
+      const filepath = path.join(uploadsDir, filename);
+
+      // Preserve original quality with minimal compression
+      await sharp(file.buffer)
+        .resize(2000, null, { 
+          fit: 'inside',
+          withoutEnlargement: true 
+        })
+        .jpeg({ quality: 98, progressive: true, mozjpeg: true })
+        .toFile(filepath);
+
+      const imageUrl = `/uploads/${filename}`;
+      const image = await storage.createTshirtImage({
+        imageUrl,
+        title: title || "تی‌شرت جدید",
+        description: description || "",
+        size: size || "",
+        price: price || "",
+        alt: title || "تی‌شرت منحصر به فرد",
+        order: 0,
+        isActive: true
+      });
+
+      res.json(image);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      res.status(500).json({ message: "Failed to upload image" });
+    }
+  });
+
+  // Upload multiple t-shirt images
+  app.post('/api/admin/upload-images', requireAdmin, upload.array('images', 20), async (req, res) => {
     try {
       const files = req.files as Express.Multer.File[];
       if (!files || files.length === 0) {
@@ -157,23 +199,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const uploadedImages = [];
 
       for (const file of files) {
-        const filename = `tshirt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.webp`;
+        const filename = `tshirt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.jpg`;
         const filepath = path.join(uploadsDir, filename);
 
-        // Process and save image with high quality and preserved aspect ratio
+        // Preserve original quality with minimal compression
         await sharp(file.buffer)
-          .resize(1200, null, { 
+          .resize(2000, null, { 
             fit: 'inside',
             withoutEnlargement: true 
           })
-          .webp({ quality: 95, lossless: false })
+          .jpeg({ quality: 98, progressive: true, mozjpeg: true })
           .toFile(filepath);
 
         const imageUrl = `/uploads/${filename}`;
         const image = await storage.createTshirtImage({
           imageUrl,
+          title: `تی‌شرت ${uploadedImages.length + 1}`,
+          description: "",
+          size: "",
+          price: "",
           alt: "تی‌شرت منحصر به فرد",
-          order: 0, // Will be updated with proper order
+          order: uploadedImages.length,
           isActive: true
         });
 
