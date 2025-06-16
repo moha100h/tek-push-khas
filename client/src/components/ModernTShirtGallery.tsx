@@ -15,87 +15,87 @@ function ProductDetailModal({ product, isOpen, onClose }: ProductDetailModalProp
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-lg">
-      <div className="relative max-w-6xl w-full max-h-[90vh] overflow-hidden bg-[var(--pure-white)] rounded-3xl shadow-2xl border border-[var(--medium-gray)]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-lg">
+      <div className="relative w-full max-w-4xl max-h-[95vh] overflow-auto bg-[var(--pure-white)] rounded-2xl sm:rounded-3xl shadow-2xl border border-[var(--medium-gray)]">
         
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-6 left-6 z-10 p-3 bg-black/20 backdrop-blur-sm rounded-full hover:bg-black/40 transition-colors"
+          className="absolute top-3 left-3 sm:top-6 sm:left-6 z-10 p-2 sm:p-3 bg-black/20 backdrop-blur-sm rounded-full hover:bg-black/40 transition-colors"
         >
-          <X className="w-6 h-6 text-white" />
+          <X className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
         </button>
         
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-0 h-full">
+        {/* Mobile-First Layout */}
+        <div className="flex flex-col">
           
-          {/* Product Image */}
-          <div className="md:col-span-3 relative bg-[var(--light-gray)] flex items-center justify-center min-h-[300px] md:min-h-[500px] order-2 md:order-1">
+          {/* Product Image Section */}
+          <div className="relative bg-[var(--light-gray)] flex items-center justify-center min-h-[250px] sm:min-h-[350px] md:min-h-[400px]">
             <img
               src={product.imageUrl}
               alt={product.title || product.alt}
-              className="w-full h-full object-contain p-4 md:p-8"
-              style={{ maxHeight: '80vh' }}
+              className="w-full h-full object-contain p-4 sm:p-6 md:p-8"
+              style={{ maxHeight: '60vh' }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--primary-red)]/5 to-transparent pointer-events-none" />
             
             {/* Quality Badge */}
-            <div className="absolute top-4 right-4">
-              <div className="flex items-center space-x-reverse space-x-2 bg-[var(--pure-white)]/90 backdrop-blur-sm px-2 md:px-3 py-1 md:py-2 rounded-full border border-[var(--medium-gray)]">
-                <Star className="w-3 h-3 md:w-4 md:h-4 text-[var(--primary-red)] fill-current" />
-                <span className="text-xs md:text-sm font-medium text-[var(--text-black)]">کیفیت پریمیوم</span>
+            <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
+              <div className="flex items-center space-x-reverse space-x-2 bg-[var(--pure-white)]/90 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-2 rounded-full border border-[var(--medium-gray)]">
+                <Star className="w-3 h-3 sm:w-4 sm:h-4 text-[var(--primary-red)] fill-current" />
+                <span className="text-xs sm:text-sm font-medium text-[var(--text-black)]">کیفیت پریمیوم</span>
               </div>
             </div>
           </div>
           
-          {/* Product Details */}
-          <div className="md:col-span-2 p-4 md:p-8 space-y-4 md:space-y-6 bg-[var(--ice-white)] flex flex-col justify-between order-1 md:order-2">
-            <div className="space-y-4 md:space-y-6">
-              
-              {/* Header */}
-              <div className="space-y-4">
-                <h3 className="text-3xl font-bold red-text leading-tight">
-                  {product.title || product.alt}
-                </h3>
-                <Badge className="bg-[var(--primary-red)]/20 text-[var(--primary-red)] border-[var(--primary-red)]/30 red-border px-4 py-2 text-sm font-medium">
-                  تک پوش خاص
-                </Badge>
-              </div>
-              
+          {/* Product Details Section - Below Image */}
+          <div className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 bg-[var(--ice-white)]">
+            
+            {/* Header */}
+            <div className="space-y-3 sm:space-y-4">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold red-text leading-tight">
+                {product.title || product.alt}
+              </h3>
+              <Badge className="bg-[var(--primary-red)]/20 text-[var(--primary-red)] border-[var(--primary-red)]/30 red-border px-3 sm:px-4 py-1 sm:py-2 text-sm font-medium">
+                تک پوش خاص
+              </Badge>
+            </div>
+            
+            {/* Size and Price Row */}
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
               {/* Size Info */}
               {product.size && (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <span className="text-[var(--text-gray)] text-sm font-medium">سایز موجود:</span>
-                  <div className="flex items-center space-x-reverse space-x-3">
-                    <div className="px-4 py-2 bg-[var(--light-gray)] text-[var(--text-black)] font-semibold rounded-xl border border-[var(--medium-gray)]">
-                      {product.size}
-                    </div>
+                  <div className="px-3 sm:px-4 py-2 bg-[var(--light-gray)] text-[var(--text-black)] font-semibold rounded-xl border border-[var(--medium-gray)] text-center w-fit">
+                    {product.size}
                   </div>
                 </div>
               )}
 
               {/* Price Display */}
               {product.price && (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <span className="text-[var(--text-gray)] text-sm font-medium">قیمت:</span>
                   <div className="flex items-center space-x-reverse space-x-2">
-                    <span className="text-2xl font-bold red-text">
+                    <span className="text-xl sm:text-2xl font-bold red-text">
                       {product.price}
                     </span>
                     <span className="text-[var(--text-gray)] text-sm">تومان</span>
                   </div>
                 </div>
               )}
-              
-              {/* Separator */}
-              <div className="red-separator"></div>
-              
-              {/* Description */}
-              <div className="space-y-3">
-                <span className="text-[var(--text-gray)] text-sm font-medium">توضیحات محصول:</span>
-                <p className="text-[var(--text-black)] leading-relaxed">
-                  {product.description || "این طراحی منحصر به فرد از مجموعه تک پوش خاص، ترکیبی از هنر مدرن و کیفیت بالا است که سبک منحصر به فرد شما را نمایان می‌کند."}
-                </p>
-              </div>
+            </div>
+            
+            {/* Separator */}
+            <div className="red-separator"></div>
+            
+            {/* Description Section */}
+            <div className="space-y-3">
+              <span className="text-[var(--text-gray)] text-sm font-medium">توضیحات محصول:</span>
+              <p className="text-[var(--text-black)] leading-relaxed text-sm sm:text-base">
+                {product.description || "این طراحی منحصر به فرد از مجموعه تک پوش خاص، ترکیبی از هنر مدرن و کیفیت بالا است که سبک منحصر به فرد شما را نمایان می‌کند."}
+              </p>
             </div>
 
             {/* Action Button */}
